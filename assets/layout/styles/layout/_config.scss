@@ -1,0 +1,42 @@
+.layout-config-button {
+    display: block;
+    position: fixed;
+    width: 3rem;
+    height: 3rem;
+    line-height: 3rem;
+    background: var(--primary-color);
+    color: var(--primary-color-text);
+    text-align: center;
+    top: 50%;
+    inset-inline-end: 0; /* Changed from right to inset-inline-end */
+    margin-block-start: -1.5rem; /* Changed from margin-top to margin-block-start */
+    border-start-start-radius: var(--border-radius); /* Changed from border-top-left-radius to border-start-start-radius */
+    border-end-start-radius: var(--border-radius); /* Changed from border-bottom-left-radius to border-end-start-radius */
+    border-start-end-radius: 0; /* Changed from border-top-right-radius to border-start-end-radius */
+    border-end-end-radius: 0; /* Changed from border-bottom-right-radius to border-end-end-radius */
+    transition: background-color var(--transition-duration);
+    overflow: hidden;
+    cursor: pointer;
+    z-index: 999;
+    box-shadow: -.25rem 0 1rem rgba(0, 0, 0, .15);
+
+    i {
+        font-size: 2rem;
+        line-height: inherit;
+        transform: rotate(0deg);
+        transition: transform 1s;
+    }
+    
+    &:hover {
+        background: var(--primary-400);
+    }
+}
+
+.layout-config-sidebar {
+    &.p-sidebar {
+        .p-sidebar-content {
+            padding-inline-start: 2rem; /* Changed from padding-left to padding-inline-start */
+            padding-inline-end: 2rem; /* Changed from padding-right to padding-inline-end */
+        }
+    }
+}

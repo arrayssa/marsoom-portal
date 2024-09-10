@@ -1,0 +1,80 @@
+h1, h2, h3, h4, h5, h6 {
+    margin-block-start: 1.5rem; /* top margin */
+    margin-block-end: 1rem; /* bottom margin */
+    margin-inline-start: 0; /* start margin (left in LTR, right in RTL) */
+    margin-inline-end: 0; /* end margin (right in LTR, left in RTL) */
+    font-family: inherit;
+    font-weight: 500;
+    line-height: 1.2;
+    color: var(--surface-900);
+
+    &:first-child {
+        margin-block-start: 0; /* remove top margin for first-child */
+    }
+}
+
+h1 {
+    font-size: 2.5rem;
+}
+
+h2 {
+    font-size: 2rem;
+}
+
+h3 {
+    font-size: 1.75rem;
+}
+
+h4 {
+    font-size: 1.5rem;
+}
+
+h5 {
+    font-size: 1.25rem;
+}
+
+h6 {
+    font-size: 1rem;
+}
+
+mark {
+    background: #FFF8E1;
+    padding-block-start: .25rem;
+    padding-block-end: .25rem;
+    padding-inline-start: .4rem;
+    padding-inline-end: .4rem;
+    border-radius: $borderRadius;
+    font-family: monospace;
+}
+
+blockquote {
+    margin-block-start: 1rem;
+    margin-block-end: 1rem;
+    margin-inline-start: 0;
+    margin-inline-end: 0;
+    padding-block-start: 0;
+    padding-block-end: 0;
+    padding-inline-start: 2rem;
+    border-inline-start: 4px solid #90A4AE;
+}
+
+hr {
+    border-block-start: solid var(--surface-border);
+    border-block-end: 0;
+    border-inline-end: 0;
+    border-inline-start: 0;
+    margin-block-start: 1rem;
+    margin-block-end: 1rem;
+}
+
+p {
+    margin-block-start: 0;
+    margin-block-end: 1rem;
+    margin-inline-start: 0;
+    margin-inline-end: 0;
+    line-height: 1.5;
+
+    &:last-child {
+        margin-block-end: 0; /* remove bottom margin for last-child */
+    }
+}

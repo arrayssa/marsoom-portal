@@ -1,0 +1,13 @@
+// make rtl for primeflex
+html[dir="rtl"] {
+    direction: rtl;
+
+    body {
+      font-family: 'cairo', sans-serif;
+    }
+    
+    .pi-arrow-left {
+      transform: rotate(180deg);
+    }
+}
+  
