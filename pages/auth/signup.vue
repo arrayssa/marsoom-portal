@@ -59,6 +59,7 @@
 <script>
 import { useSignupStore } from '../../store/auth';
 import { useRouter } from 'vue-router'; // Import useRouter
+import { useRuntimeConfig } from '#imports';
 
 export default {
   setup() {
@@ -68,7 +69,7 @@ export default {
     // Fetch cities from API when the component is mounted
     onMounted(async () => {
       try {
-        const response = await fetch('http://127.0.0.1:8000/api/cities'); // Replace with your API URL
+        const response = await fetch(useRuntimeConfig().public.apiBaseUrl+'cities'); // Replace with your API URL
         const data = await response.json();
         cities.value = data.data.cities; // Assuming your API response has a "cities" array
       } catch (error) {
