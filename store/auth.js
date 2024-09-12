@@ -1,5 +1,6 @@
 import { defineStore } from 'pinia';
 import axios from 'axios';
+import { useRuntimeConfig } from '#imports';
 
 export const useAuthStore = defineStore('auth', {
   state: () => ({
@@ -7,10 +8,11 @@ export const useAuthStore = defineStore('auth', {
     error: null,
     authenticated: !!localStorage.getItem('authToken')
   }),
+
   actions: {
     async authenticateUser({ email, password }) {
       try {
-        const response = await axios.post('http://127.0.0.1:8000/api/auth/login', {
+        const response = await axios.post(useRuntimeConfig().public.apiBaseUrl +'auth/login', {
           email,
           password
         });
@@ -93,7 +95,7 @@ export const useSignupStore = defineStore('signup', {
           }
         };
         console.log({ data: formData.get('first_name') });
-        const response = await axios.post('http://127.0.0.1:8000/api/auth/register', formData, config);
+        const response = await axios.post(useRuntimeConfig().public.apiBaseUrl +'auth/register', formData, config);
 
         if (!response) {
           throw new Error('Failed to sign up');
@@ -115,13 +117,13 @@ export const useProfileStore = defineStore('profile', {
     async fetchProfile() {
       try {
           const api = axios.create({
-              baseURL: 'http://127.0.0.1:8000/api',
+              baseURL: useRuntimeConfig().public.apiBaseUrl ,
               headers: {
                   Authorization: `Bearer ${localStorage.getItem('authToken')}`, // Add the token to the Authorization header
                   'Access-Control-Allow-Origin': '*', // Allow all origins (adjust this based on your security needs)
               },
           });
-          const response = await api.get('/profile');
+          const response = await api.get('profile');
           this.user = response.data.data.user;
         //  alert( this.user.city.name)
       } catch (error) {
@@ -140,7 +142,7 @@ export const useOrganizationStore = defineStore('organization', {
         async fetchOrganization() {
             try {
                 const api = axios.create({
-                    baseURL: 'http://127.0.0.1:8000/api',
+                    baseURL: useRuntimeConfig().public.apiBaseUrl ,
                     headers: {
                         Authorization: `Bearer ${localStorage.getItem('authToken')}`, // Add the token to the Authorization header
                         'Access-Control-Allow-Origin': '*', // Allow all origins (adjust this based on your security needs)

@@ -98,7 +98,7 @@ export default {
             const token = localStorage.getItem('authToken'); // Get the token from localStorage
 
             try {
-                const response = await $axios.get('/profile', {
+                const response = await $axios.get('profile', {
                     headers: {
                         'Authorization': `Bearer ${token}`
                     }
@@ -135,7 +135,7 @@ export default {
             const token = localStorage.getItem('authToken'); // Get the token from localStorage
 
             try {
-                const response = await $axios.post('/accept_notification/'+id,[], {
+                const response = await $axios.post('accept_notification/'+id,[], {
                     headers: {
                         'Authorization': `Bearer ${token}`
                     }
@@ -153,7 +153,7 @@ export default {
             const token = localStorage.getItem('authToken'); // Get the token from localStorage
 
             try {
-                const response = await $axios.post('/reject_notification/'+id,[], {
+                const response = await $axios.post('reject_notification/'+id,[], {
                     headers: {
                         'Authorization': `Bearer ${token}`
                     }

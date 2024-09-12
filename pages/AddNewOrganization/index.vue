@@ -428,7 +428,7 @@ export default {
       const {$axios} = useNuxtApp();
 
       try {
-        const response = await $axios.get('/countries');  // Replace with your API endpoint
+        const response = await $axios.get('countries');  // Replace with your API endpoint
         this.countries = response.data.data.countries;
       } catch (error) {
         console.error('Error fetching countries:', error);
@@ -439,7 +439,7 @@ export default {
 
       if (!this.form.nationalityId) return;
       try {
-        const response = await $axios.get(`/cities/${this.form.nationalityId}`); // Replace with actual API
+        const response = await $axios.get(`cities/${this.form.nationalityId}`); // Replace with actual API
         this.cities = response.data.data.cities;
       } catch (error) {
         console.error('Error fetching cities:', error);
@@ -449,7 +449,7 @@ export default {
       const {$axios} = useNuxtApp();
 
       try {
-        const response = await $axios.get('/classifications'); // Replace with actual API
+        const response = await $axios.get('classifications'); // Replace with actual API
         this.classifications = response.data.data.classifications;
       } catch (error) {
         console.error('Error fetching classifications:', error);
@@ -460,7 +460,7 @@ export default {
       const token = localStorage.getItem('authToken'); // Get the token from localStorage
 
       try {
-        const response = await $axios.get('/organizations', {
+        const response = await $axios.get('organizations', {
           headers: {
             'Authorization': `Bearer ${token}`
           }
@@ -549,7 +549,7 @@ export default {
 
       try {
         // Send form data with authorization token
-        const response = await $axios.post('/organizations', formData, {
+        const response = await $axios.post('organizations', formData, {
           headers: {
             'Authorization': `Bearer ${token}`,
             'Content-Type': 'multipart/form-data'
@@ -608,7 +608,7 @@ export default {
 
       try {
         const token = localStorage.getItem('authToken');
-        const response = await $axios.post('/import_books', formData, {
+        const response = await $axios.post('import_books', formData, {
           headers: {
             'Authorization': `Bearer ${token}`,
             'Content-Type': 'multipart/form-data'
@@ -655,7 +655,7 @@ export default {
       // You could also send the updated book data to the backend here, using $axios.put or $axios.post if needed
       // Example:
       const { $axios } = useNuxtApp();
-      $axios.post(`/books_update_quantity/${this.originalBook.id}`, this.originalBook, {
+      $axios.post(`books_update_quantity/${this.originalBook.id}`, this.originalBook, {
         headers: {
           'Authorization': `Bearer ${token}`
         }
@@ -678,7 +678,7 @@ export default {
         // Simulating API call to fetch books that match search query
         const {$axios} = useNuxtApp();
         const token = localStorage.getItem('authToken');
-        const response = await $axios.get(`/employee_search?search=${this.searchQuery}`, {
+        const response = await $axios.get(`employee_search?search=${this.searchQuery}`, {
           headers: {
             'Authorization': `Bearer ${token}`,
           }
@@ -715,7 +715,7 @@ export default {
           this.add_employee.organization_id=this.organization_id;
           const token = localStorage.getItem('authToken');
 
-          const response = await $axios.post('/add_employee', this.add_employee, {
+          const response = await $axios.post('add_employee', this.add_employee, {
             headers: {
               'Authorization': `Bearer ${token}`
             }});
