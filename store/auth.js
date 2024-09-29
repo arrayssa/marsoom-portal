@@ -37,7 +37,8 @@ export const useAuthStore = defineStore('auth', {
       localStorage.removeItem('authToken'); // Remove token from localStorage
       useCookie('token').value = null; // Clear the token cookie
       // Optionally, redirect to login or home page
-      navigateTo(localePath({ name: 'auth-login' })); // Redirect to login page after logout
+      abortNavigation();
+      return navigateTo(localePath({ name: 'auth-login' }));
     }
   }
 });
