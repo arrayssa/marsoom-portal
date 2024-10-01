@@ -172,15 +172,7 @@
 
         <button type="submit" class="next-btn">Next</button>
 
-        <button v-if="org_status !== 'Approved'" type="submit" class="next-btn" >Next</button>
-        <button
-          v-else
-          type="button"
-          class="next-btn"
-          @click="nextStep"
-        >
-          Next Step
-        </button>
+      
 
         <div>
     <!-- Button shown when org_status is not 'Approved' -->
