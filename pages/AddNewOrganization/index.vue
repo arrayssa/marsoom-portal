@@ -170,7 +170,7 @@
       <div class="button-row">
         <button type="button" class="cancel-btn" @click="cancelForm">Cancel</button>
 
-        <button type="submit" class="next-btn">Next</button>
+      
 
       
 
