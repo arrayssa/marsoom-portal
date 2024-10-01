@@ -182,6 +182,27 @@
           Next Step
         </button>
 
+        <div>
+    <!-- Button shown when org_status is not 'Approved' -->
+          <button
+            v-if="org_status !== 'Approved'"
+            type="submit"
+            class="next-btn"
+          >
+            send request
+          </button>
+
+          <!-- Button shown when org_status is 'Approved' -->
+          <button
+            v-else
+            type="button"
+            class="next-btn"
+            @click="nextStep"
+          >
+            Next Step
+          </button>
+      </div>
+
       </div>
 
     </form>
