@@ -169,7 +169,19 @@
       <!-- Submit Button -->
       <div class="button-row">
         <button type="button" class="cancel-btn" @click="cancelForm">Cancel</button>
+
         <button type="submit" class="next-btn">Next</button>
+
+        <button v-if="org_status !== 'Approved'" type="submit" class="next-btn" >Next</button>
+        <button
+          v-else
+          type="button"
+          class="next-btn"
+          @click="nextStep"
+        >
+          Next Step
+        </button>
+
       </div>
 
     </form>
