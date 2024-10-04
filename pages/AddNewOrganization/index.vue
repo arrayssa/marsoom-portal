@@ -1,241 +1,232 @@
 <template>
   <div class="form-container">
-    <div class="steps-container">
-      <div :class="{ active: currentStep === 1 }" @click="goToStep(1)">
-        <span>1</span> Add Organization
-      </div>
-      <div :class="{ active: currentStep === 2 }" @click="goToStep(2)">
-        <span>2</span> Book list
-      </div>
-
+    <div class="progress-container">
+    <div class="step" v-for="step in steps" :key="step" :class="{ active: currentStep >= step.number }">
+      <div class="step-number" @click="goToStep(step.number)">{{ step.number  }}</div>
+      <div class="step-label" @click="goToStep(step.number)">{{ step.label  }}</div>
     </div>
+    <div class="progress-bar">
+      <div class="progress" :style="{ width: progressWidth }"></div>
+    </div>
+  </div>
+
+   
+
     <div v-if="currentStep === 1">
-    <form @submit.prevent="submitForm" v-if="currentStep === 1">
-      <!-- Row 1 -->
-      <div class="row">
-        <div class="column">
-          <label for="name">Name</label>
-          <input v-model="form.name" id="name" type="text" placeholder="Enter Name"/>
+      <form @submit.prevent="submitForm" v-if="currentStep === 1">
+        <!-- Row 1 -->
+        <div class="row">
+          <div class="column form-group">
+            <label for="name">Name</label>
+            <input v-model="form.name" id="name" type="text" placeholder="Enter Name"   class="form-control" />
+          </div>
+          <div class="column form-group">
+            <label for="commercialName">Commercial Name</label>
+            <input v-model="form.commercialName" id="commercialName" type="text"  class="form-control" placeholder="Enter Commercial Name" />
+          </div>
+          <div class="column form-group">
+            <label for="abbreviation">Abbreviation</label>
+            <input v-model="form.abbreviation" id="abbreviation" type="text"  class="form-control" placeholder="Enter Abbreviation" />
+          </div>
+          <div class="column form-group" v-if="false">
+            <label for="nameTag">Name Tag</label>
+            <input v-model="form.nameTag" id="nameTag" type="text"  class="form-control" placeholder="Enter Name Tag" />
+          </div>
         </div>
-        <div class="column">
-          <label for="commercialName">Commercial Name</label>
-          <input v-model="form.commercialName" id="commercialName" type="text" placeholder="Enter Commercial Name"/>
+
+        <!-- Row 2 -->
+        <div class="row">
+          <div class="column form-group">
+            <label for="commercialId">Commercial ID</label>
+            <input v-model="form.commercialId" id="commercialId" type="number"  class="form-control" placeholder="Enter ID" />
+          </div>
+          <div class="column form-group">
+            <label for="commercialExpiration">Commercial Expiration</label>
+            <input v-model="form.commercialExpiration" id="commercialExpiration" type="date"  class="form-control"/>
+          </div>
+          <div class="column form-group" v-if="false">
+            <label for="taxExpiration">Tax Expiration</label>
+            <input v-model="form.taxExpiration" id="taxExpiration" type="date"  class="form-control"/>
+          </div>
+          <div class="column form-group">
+            <label for="email">Email</label>
+            <input v-model="form.email" id="email" type="email" placeholder="Enter Email"  class="form-control"/>
+          </div>
         </div>
-        <div class="column">
-          <label for="abbreviation">Abbreviation</label>
-          <input v-model="form.abbreviation" id="abbreviation" type="text" placeholder="Enter Abbreviation"/>
+
+        <!-- Row 3 -->
+        <div class="row">
+          <div class="column form-group" v-if="false">
+            <label for="establishDate">Establish Date</label>
+            <input v-model="form.establishDate" id="establishDate" type="date"  class="form-control"/>
+          </div>
+          <div class="column form-group">
+            <label for="zip">Zip</label>
+            <input v-model="form.zip" id="zip" type="text" placeholder="Enter Zip"  class="form-control"/>
+          </div>
+          <div class="column form-group">
+            <label for="phone1">Phone 1</label>
+            <vue-tel-input
+      v-model="form.phone1"
+      id="phone2"
+      placeholder="Enter Phone Number"
+      :preferred-countries="['eg']" 
+    />
+
+          </div>
+          <div class="column form-group">
+            <label for="phone2">Phone 2</label>
+           
+            <vue-tel-input
+      v-model="form.phone2"
+      id="phone2"
+      placeholder="Enter Phone Number"
+      :preferred-countries="['eg']" 
+    />
+          </div>
         </div>
-        <div class="column">
-          <label for="nameTag">Name Tag</label>
-          <input v-model="form.nameTag" id="nameTag" type="text" placeholder="Enter Name Tag"/>
+
+        <!-- Row 4 -->
+        <div class="row">
+          <div class="column form-group" v-if="false">
+            <label for="whatsapp">WhatsApp</label>
+            <input v-model="form.whatsapp" id="whatsapp" type="text" placeholder="WhatsApp Number" class="form-control" />
+          </div>
+          <div class="column form-group" v-if="false">
+            <label for="headOfficeAddress">Head Office Address</label>
+            <input v-model="form.headOfficeAddress" id="headOfficeAddress" type="text" placeholder="Enter Address" class="form-control" />
+          </div>
+          <div class="column form-group">
+            <label for="websiteUrl">Website URL</label>
+            <input v-model="form.websiteUrl" id="websiteUrl" type="text" placeholder="Enter Website URL" class="form-control" />
+          </div>
         </div>
+
+        <!-- Row 5 - Dropdowns -->
+        <div class="row">
+
+          <div class="column form-group">
+            <label for="nationalityId">Country</label>
+
+            <select v-model="form.nationalityId" id="nationalityId" @change="fetchCities" class="form-control">
+              <option v-for="country in countries" :key="country.id" :value="country.id">{{ country.name }}</option>
+            </select>
+          </div>
+
+          <div class="column form-group">
+            <label for="cityId">City</label>
+            <select v-model="form.cityId" id="cityId" class="form-control">
+              <option v-for="city in cities" :key="city.id" :value="city.id">{{ city.name }}</option>
+            </select>
+          </div>
+          <div class="column form-group">
+            <label for="classificationCode">Classification Code</label>
+            <select v-model="form.classificationCode" id="classificationCode" class="form-control">
+              <option v-for="classification in classifications" :key="classification.id" :value="classification.id">
+                {{ classification.name }}
+              </option>
+            </select>
+          </div>
+        </div>
+
+        <!-- File Uploads -->
+        <h3>Upload Files</h3>
+        <div class="row">
+          <div class="column form-group">
+            <label>Upload Company Logo</label>
+            <input type="file" class="form-control" @change="handleFileUpload($event, 'companyLogo')" />
+          </div>
+          <div class="column form-group">
+            <label>Commercial File</label>
+            <input type="file" class="form-control" @change="handleFileUpload($event, 'commercialFile')" />
+          </div>
+          <div class="column form-group">
+            <label>Publishing File</label>
+            <input type="file" class="form-control" @change="handleFileUpload($event, 'publishingFile')" />
+          </div>
+        </div>
+        <div class="row">
+          <div class="column form-group">
+            <label for="iban">IBAN</label>
+            <input v-model="form.iban" id="iban" type="text" placeholder="Enter IBAN" class="form-control" />
+          </div>
+          <div class="column form-group">
+            <label for="swiftCode">Swift Code</label>
+            <input v-model="form.swiftCode" id="swiftCode" type="text" placeholder="Enter Swift Code" class="form-control" />
+          </div>
+          <div class="column form-group">
+            <label for="bank">Bank</label>
+            <input v-model="form.bank" id="bank" type="text" placeholder="Enter Bank" class="form-control" />
+          </div>
+          <div class="column form-group">
+            <label for="bankAccount">Bank Account</label>
+            <input v-model="form.bankAccount" id="bankAccount" type="text" placeholder="Enter Bank Account" class="form-control" />
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="column form-group" v-if="false">
+            <label for="membershipNumber">Membership Number</label>
+            <input v-model="form.membershipNumber" id="membershipNumber" type="text" class="form-control"
+              placeholder="Enter Membership Number" />
+          </div>
+          <div class="column form-group">
+            <label for="publishingLicense">Publishing License</label>
+            <input v-model="form.publishingLicense" id="publishingLicense" type="text" class="form-control"
+              placeholder="Enter Publishing License" />
+          </div>
+          <div class="column form-group">
+            <label for="publishingLicenseExpiration">Publishing License Expiration</label>
+            <input v-model="form.publishingLicenseExpiration" id="publishingLicenseExpiration" type="date"  class="form-control" />
+          </div>
+        </div>
+
+        <!-- Submit Button -->
+        <div class="button-row">
+          <button type="button" class="cancel-btn" @click="cancelForm">Cancel</button>
+
+
+
+
+
+          <div>
+            <!-- Button shown when org_status is not 'Approved' -->
+            <button v-if="org_status !== 'Approved'" type="submit" class="next-btn">
+              send request
+            </button>
+
+            <!-- Button shown when org_status is 'Approved' -->
+            <button v-else type="button" class="next-btn" @click="nextStep">
+
+              Next Step
+            </button>
+          </div>
+
+        </div>
+
+      </form>
+      <div v-show="false" class="autocomplete-container" v-if="org_status == 'Approved' && !org.employee">
+        <label for="search">Search Employee (by name, email or phone:</label>
+        <input type="text" id="search" v-model="searchQuery" @input="fetchSuggestions"
+          @keydown.down="highlightSuggestion(1)" @keydown.up="highlightSuggestion(-1)" @keydown.enter="selectSuggestion"
+          placeholder="Start typing the book title..." class="autocomplete-input" />
+
+        <!-- Suggestions Dropdown -->
+        <ul v-if="suggestions.length" class="suggestions-list">
+          <li v-for="(suggestion, index) in suggestions" :key="index"
+            :class="{ 'highlighted': index === selectedIndex }" @click="selectSuggestion(index)"
+            @mouseover="highlightIndex(index)">
+            {{ suggestion.first_name }} {{ suggestion.last_name }}
+          </li>
+        </ul>
+
+        <button v-if="search_id" @click="addSelectedEmployee" class="add-book-btn">
+          Add Employee
+        </button>
       </div>
-
-      <!-- Row 2 -->
-      <div class="row">
-        <div class="column">
-          <label for="commercialId">Commercial ID</label>
-          <input v-model="form.commercialId" id="commercialId" type="text" placeholder="Enter ID"/>
-        </div>
-        <div class="column">
-          <label for="commercialExpiration">Commercial Expiration</label>
-          <input v-model="form.commercialExpiration" id="commercialExpiration" type="date"/>
-        </div>
-        <div class="column">
-          <label for="taxExpiration">Tax Expiration</label>
-          <input v-model="form.taxExpiration" id="taxExpiration" type="date"/>
-        </div>
-        <div class="column">
-          <label for="email">Email</label>
-          <input v-model="form.email" id="email" type="email" placeholder="Enter Email"/>
-        </div>
-      </div>
-
-      <!-- Row 3 -->
-      <div class="row">
-        <div class="column">
-          <label for="establishDate">Establish Date</label>
-          <input v-model="form.establishDate" id="establishDate" type="date"/>
-        </div>
-        <div class="column">
-          <label for="zip">Zip</label>
-          <input v-model="form.zip" id="zip" type="text" placeholder="Enter Zip"/>
-        </div>
-        <div class="column">
-          <label for="phone1">Phone 1</label>
-          <input v-model="form.phone1" id="phone1" type="text" placeholder="Enter Phone Number"/>
-        </div>
-        <div class="column">
-          <label for="phone2">Phone 2</label>
-          <input v-model="form.phone2" id="phone2" type="text" placeholder="Enter Phone Number"/>
-        </div>
-      </div>
-
-      <!-- Row 4 -->
-      <div class="row">
-        <div class="column">
-          <label for="whatsapp">WhatsApp</label>
-          <input v-model="form.whatsapp" id="whatsapp" type="text" placeholder="WhatsApp Number"/>
-        </div>
-        <div class="column">
-          <label for="headOfficeAddress">Head Office Address</label>
-          <input v-model="form.headOfficeAddress" id="headOfficeAddress" type="text" placeholder="Enter Address"/>
-        </div>
-        <div class="column">
-          <label for="websiteUrl">Website URL</label>
-          <input v-model="form.websiteUrl" id="websiteUrl" type="text" placeholder="Enter Website URL"/>
-        </div>
-      </div>
-
-      <!-- Row 5 - Dropdowns -->
-      <div class="row">
-
-        <div class="column">
-          <label for="nationalityId">Nationality ID</label>
-
-          <select v-model="form.nationalityId" id="nationalityId" @change="fetchCities">
-            <option v-for="country in countries" :key="country.id" :value="country.id">{{ country.name }}</option>
-          </select>
-        </div>
-
-        <div class="column">
-          <label for="cityId">City ID</label>
-          <select v-model="form.cityId" id="cityId">
-            <option v-for="city in cities" :key="city.id" :value="city.id">{{ city.name }}</option>
-          </select>
-        </div>
-        <div class="column">
-          <label for="classificationCode">Classification Code</label>
-          <select v-model="form.classificationCode" id="classificationCode">
-            <option v-for="classification in classifications" :key="classification.id" :value="classification.id">
-              {{ classification.name }}
-            </option>
-          </select>
-        </div>
-      </div>
-
-      <!-- File Uploads -->
-      <h3>Upload Files</h3>
-      <div class="row">
-        <div class="column">
-          <label>Upload Company Logo</label>
-          <input type="file" @change="handleFileUpload($event, 'companyLogo')"/>
-        </div>
-        <div class="column">
-          <label>Commercial File</label>
-          <input type="file" @change="handleFileUpload($event, 'commercialFile')"/>
-        </div>
-        <div class="column">
-          <label>Publishing File</label>
-          <input type="file" @change="handleFileUpload($event, 'publishingFile')"/>
-        </div>
-      </div>
-      <div class="row">
-        <div class="column">
-          <label for="iban">IBAN</label>
-          <input v-model="form.iban" id="iban" type="text" placeholder="Enter IBAN"/>
-        </div>
-        <div class="column">
-          <label for="swiftCode">Swift Code</label>
-          <input v-model="form.swiftCode" id="swiftCode" type="text" placeholder="Enter Swift Code"/>
-        </div>
-        <div class="column">
-          <label for="bank">Bank</label>
-          <input v-model="form.bank" id="bank" type="text" placeholder="Enter Bank"/>
-        </div>
-        <div class="column">
-          <label for="bankAccount">Bank Account</label>
-          <input v-model="form.bankAccount" id="bankAccount" type="text" placeholder="Enter Bank Account"/>
-        </div>
-      </div>
-
-      <div class="row">
-        <div class="column">
-          <label for="membershipNumber">Membership Number</label>
-          <input v-model="form.membershipNumber" id="membershipNumber" type="text"
-                 placeholder="Enter Membership Number"/>
-        </div>
-        <div class="column">
-          <label for="publishingLicense">Publishing License</label>
-          <input v-model="form.publishingLicense" id="publishingLicense" type="text"
-                 placeholder="Enter Publishing License"/>
-        </div>
-        <div class="column">
-          <label for="publishingLicenseExpiration">Publishing License Expiration</label>
-          <input v-model="form.publishingLicenseExpiration" id="publishingLicenseExpiration" type="date"/>
-        </div>
-      </div>
-
-      <!-- Submit Button -->
-      <div class="button-row">
-        <button type="button" class="cancel-btn" @click="cancelForm">Cancel</button>
-
-      
-
-      
-
-        <div>
-    <!-- Button shown when org_status is not 'Approved' -->
-          <button
-            v-if="org_status !== 'Approved'"
-            type="submit"
-            class="next-btn"
-          >
-            send request
-          </button>
-
-          <!-- Button shown when org_status is 'Approved' -->
-          <button
-            v-else
-            type="button"
-            class="next-btn"
-            @click="nextStep"
-          >
-            Next Step
-          </button>
-      </div>
-
-      </div>
-
-    </form>
-    <div class="autocomplete-container" v-if="org_status=='Approved'&&!org.employee">
-      <label for="search">Search Employee (by name, email or phone:</label>
-      <input
-          type="text"
-          id="search"
-          v-model="searchQuery"
-          @input="fetchSuggestions"
-          @keydown.down="highlightSuggestion(1)"
-          @keydown.up="highlightSuggestion(-1)"
-          @keydown.enter="selectSuggestion"
-          placeholder="Start typing the book title..."
-          class="autocomplete-input"
-      />
-
-      <!-- Suggestions Dropdown -->
-      <ul v-if="suggestions.length" class="suggestions-list">
-        <li
-            v-for="(suggestion, index) in suggestions"
-            :key="index"
-            :class="{ 'highlighted': index === selectedIndex }"
-            @click="selectSuggestion(index)"
-            @mouseover="highlightIndex(index)"
-        >
-          {{ suggestion.first_name }}  {{ suggestion.last_name }}
-        </li>
-      </ul>
-
-      <button
-          v-if="search_id"
-          @click="addSelectedEmployee"
-          class="add-book-btn"
-      >
-        Add Employee
-      </button>
     </div>
-      </div>
 
-    <div v-if="currentStep === 2&& org_status=='Approved'">
+    <div v-if="currentStep === 2 && org_status == 'Approved'">
       <h2>Upload Book List</h2>
       <div class="upload-container">
         <label for="bookFile">Upload Excel File (.xlsx)</label>
@@ -253,37 +244,38 @@
       <h3>Books List</h3>
       <table v-if="books && books.length" class="books-table">
         <thead>
-        <tr>
-          <th>RDMK</th>
+          <tr>
+            <th>RDMK</th>
 
-          <th>Title</th>
-          <th>Author</th>
-          <th>Issue Date</th>
-          <th>Language</th>
-          <th>Quantity</th>
-          <th>Price</th>
-          <th>Bar Code</th>
-          <th>Status</th>
-          <th>Action</th> <!-- New Action Column -->
+            <th>Title</th>
+            <th>Author</th>
+            <th>Issue Date</th>
+            <th>Language</th>
+            <th>Quantity</th>
+            <th>Price</th>
+            <th>Bar Code</th>
+            <th>Status</th>
+            <th>Action</th> <!-- New Action Column -->
 
-        </tr>
+          </tr>
         </thead>
         <tbody>
-        <tr v-for="(book, index) in books" :key="index">
-          <td>{{ book.rdmk }}</td>
+          <tr v-for="(book, index) in books" :key="index">
+            <td>{{ book.rdmk }}</td>
 
-          <td>{{ book.title }}</td>
-          <td>{{ book.author }}</td>
-          <td>{{ book.issue_date }}</td>
-          <td>{{ book.book_language }}</td>
-          <td>{{ book.quantity }}</td>
-          <td>{{ book.price }}</td>
-          <td>{{ book.barcode }}</td>
-          <td>{{ book.status_name }}</td>
-          <td>
-            <button v-if="book.status_name=='Approved'" @click="openEditModal(book)">Edit</button> <!-- New Edit Button -->
-          </td>
-        </tr>
+            <td>{{ book.title }}</td>
+            <td>{{ book.author }}</td>
+            <td>{{ book.issue_date }}</td>
+            <td>{{ book.book_language }}</td>
+            <td>{{ book.quantity }}</td>
+            <td>{{ book.price }}</td>
+            <td>{{ book.barcode }}</td>
+            <td>{{ book.status_name }}</td>
+            <td>
+              <button v-if="book.status_name == 'Approved'" @click="openEditModal(book)">Edit</button>
+              <!-- New Edit Button -->
+            </td>
+          </tr>
         </tbody>
       </table>
 
@@ -335,7 +327,7 @@
         <span class="close" @click="closeModal">&times;</span>
         <h3>Form Submitted Successfully!</h3>
         <p>Your organization details have been saved.</p>
-        <p v-if="org_status=='Pending'">Please wait for admin approval to complete steps.</p>
+        <p v-if="org_status == 'Pending'">Please wait for admin approval to complete steps.</p>
 
         <button @click="closeModal" class="close-btn">Close</button>
       </div>
@@ -356,10 +348,14 @@
   <!-- Submit Button -->
 
 </template>
-
 <script>
+import VueTelInput from 'vue-tel-input';
 
+import '~/assets/vue-tel-input.css';
+
+const phone = ref('');
 export default {
+  
   data() {
     return {
       form: {
@@ -407,10 +403,14 @@ export default {
       }, // Object to hold the currently edited book data
       originalBook: null,
       currentStep: 1,
+      steps: [
+        { number: 1, label: 'Add Organization' },
+        { number: 2, label: 'Books' }
+      ],
       fileError: '',
       showModal: false,
       showModal2: false,
-        org: null,
+      org: null,
 
       org_status: '',
       organization_id: '',
@@ -425,6 +425,11 @@ export default {
       selectedIndex: -1, // To keep track of highlighted suggestion
 
     };
+  },
+  computed: {
+    progressWidth() {
+      return `${(this.currentStep / this.steps.length) * 100}%`; // Calculate progress width
+    },
   },
 
   async mounted() {
@@ -444,13 +449,13 @@ export default {
       }
     },
     goToStep(step) {
-      if (this.org_status!='Approved')
+      if (this.org_status != 'Approved')
         this.currentStep = 1;
       this.currentStep = step;
     },
 
     async fetchCountries() {
-      const {$axios} = useNuxtApp();
+      const { $axios } = useNuxtApp();
 
       try {
         const response = await $axios.get('countries');  // Replace with your API endpoint
@@ -460,7 +465,7 @@ export default {
       }
     },
     async fetchCities() {
-      const {$axios} = useNuxtApp();
+      const { $axios } = useNuxtApp();
 
       if (!this.form.nationalityId) return;
       try {
@@ -471,7 +476,7 @@ export default {
       }
     },
     async fetchClassifications() {
-      const {$axios} = useNuxtApp();
+      const { $axios } = useNuxtApp();
 
       try {
         const response = await $axios.get('classifications'); // Replace with actual API
@@ -481,7 +486,7 @@ export default {
       }
     },
     async fetchOrganization() {
-      const {$axios} = useNuxtApp();
+      const { $axios } = useNuxtApp();
       const token = localStorage.getItem('authToken'); // Get the token from localStorage
 
       try {
@@ -491,7 +496,7 @@ export default {
           }
         });
         this.org = response.data.data.organization; // Assuming the data is inside the `data.organization`
-           const organization= this.org;
+        const organization = this.org;
         // Populate the form with the organization's details
         this.form.name = organization.name;
         this.form.commercialName = organization.commercial_Name;
@@ -519,7 +524,7 @@ export default {
         this.form.publishingLicense = organization.publishing_license_number;
         this.form.publishingLicenseExpiration = organization.publishing_license_expiration;
         this.organization_id = organization.id;
-        this.org_status=organization.status;
+        this.org_status = organization.status;
 
         // Trigger fetching cities based on the selected nationalityId
         await this.fetchCities();
@@ -528,7 +533,7 @@ export default {
       }
     },
     async submitForm() {
-      const {$axios} = useNuxtApp();
+      const { $axios } = useNuxtApp();
 
       // Create FormData to handle both form fields and file uploads
       const formData = new FormData();
@@ -581,12 +586,11 @@ export default {
           }
         });
 
-        this.org_status=response.data.data.status;
-        if (this.org_status=='Approved')
-        {
+        this.org_status = response.data.data.status;
+        if (this.org_status == 'Approved') {
           this.goToStep(2);
         }
-       // alert(this.org_status);
+        // alert(this.org_status);
         console.log('Form submitted successfully:', response.data);
         this.showModal = true;
       } catch (error) {
@@ -608,7 +612,7 @@ export default {
       const token = localStorage.getItem('authToken'); // Get the token from localStorage
 
       try {
-        const response = await $axios.get('get_books_by_organization/'+this.organization_id, {
+        const response = await $axios.get('get_books_by_organization/' + this.organization_id, {
           headers: {
             'Authorization': `Bearer ${token}`
           }
@@ -620,7 +624,7 @@ export default {
     },
 
     async submitBookFile() {
-      const {$axios} = useNuxtApp();
+      const { $axios } = useNuxtApp();
 
       if (!this.form.bookFile) {
         this.fileError = "Please upload an Excel file before submitting.";
@@ -701,7 +705,7 @@ export default {
       }
       try {
         // Simulating API call to fetch books that match search query
-        const {$axios} = useNuxtApp();
+        const { $axios } = useNuxtApp();
         const token = localStorage.getItem('authToken');
         const response = await $axios.get(`employee_search?search=${this.searchQuery}`, {
           headers: {
@@ -710,7 +714,7 @@ export default {
         });
 
         this.suggestions = response.data.data.persons; // Assuming the API returns a list of book suggestions
-        this.search_id='';
+        this.search_id = '';
       } catch (error) {
         console.error('Error fetching suggestions:', error);
       }
@@ -725,8 +729,8 @@ export default {
     },
     selectSuggestion(index = this.selectedIndex) {
       if (index >= 0 && index < this.suggestions.length) {
-        this.searchQuery = this.suggestions[index].first_name + ' '+this.suggestions[index].last_name;
-        this.search_id = this.suggestions[index].id ;
+        this.searchQuery = this.suggestions[index].first_name + ' ' + this.suggestions[index].last_name;
+        this.search_id = this.suggestions[index].id;
 
         this.suggestions = [];
       }
@@ -734,16 +738,17 @@ export default {
     async addSelectedEmployee() {
       if (this.search_id) {
         try {
-          const {$axios} = useNuxtApp();
+          const { $axios } = useNuxtApp();
           // Simulate API call to add the selected book
-          this.add_employee.employee_id=this.search_id;
-          this.add_employee.organization_id=this.organization_id;
+          this.add_employee.employee_id = this.search_id;
+          this.add_employee.organization_id = this.organization_id;
           const token = localStorage.getItem('authToken');
 
           const response = await $axios.post('add_employee', this.add_employee, {
             headers: {
               'Authorization': `Bearer ${token}`
-            }});
+            }
+          });
 
           // Add the selected book to the local books array
 
@@ -922,7 +927,8 @@ input[type="file"] {
   justify-content: flex-end;
 }
 
-.back-btn, .submit-btn {
+.back-btn,
+.submit-btn {
   padding: 10px 15px;
   border-radius: 5px;
   font-size: 16px;
@@ -946,7 +952,8 @@ input[type="file"] {
   margin-top: 20px;
 }
 
-.books-table th, .books-table td {
+.books-table th,
+.books-table td {
   border: 1px solid #ddd;
   padding: 8px;
   text-align: left;
@@ -1088,6 +1095,7 @@ input[type="file"] {
     opacity: 0;
     transform: translateY(-10px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);
@@ -1164,4 +1172,63 @@ input[type="file"] {
   background-color: #94a3b8;
   cursor: not-allowed;
 }
+
+
+.form-container {
+  position: relative; /* To position child elements relative to this container */
+}
+.progress-container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: relative;
+  width: 100%;
+  
+  margin-bottom: 80px;
+}
+
+.step {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  z-index: 1;
+}
+
+.step-number {
+  width: 30px;
+  height: 30px;
+  background-color: #e0e0e0;
+  color: white;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-weight: bold;
+}
+
+.step-label {
+  margin-top: 5px;
+}
+
+.step.active .step-number {
+  background-color: #4caf50;
+}
+
+.progress-bar {
+  position: absolute;
+  top: 15px; /* Adjust to center between steps */
+  left: 0;
+  width: 100%;
+  height: 5px;
+  background-color: #e0e0e0;
+  z-index: 0;
+}
+
+.progress {
+  height: 100%;
+  background-color: #4caf50;
+  transition: width 0.3s ease;
+}
+
+
 </style>

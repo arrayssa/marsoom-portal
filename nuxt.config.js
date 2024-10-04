@@ -21,7 +21,7 @@ export default defineNuxtConfig({
       apiBaseUrl: process.env.API_BASE_URL
     }
   },
-  plugins: ['~/plugins/vueGoogleMaps.js', '~/plugins/date.js','~/plugins/axios.js'],
+  plugins: ['~/plugins/vueGoogleMaps.js', '~/plugins/date.js','~/plugins/axios.js','~/plugins/vue-phone-number-input.js','~/plugins/vue-tel-input.js'],
   i18n: {
     locales: [
       { code: 'en', iso: 'en', name: 'English', alpha2: 'en', dir: 'ltr', lang: 'en', file: 'en.json' },
