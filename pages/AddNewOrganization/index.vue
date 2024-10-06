@@ -1,16 +1,16 @@
 <template>
   <div class="form-container">
     <div class="progress-container">
-    <div class="step" v-for="step in steps" :key="step" :class="{ active: currentStep >= step.number }">
-      <div class="step-number" @click="goToStep(step.number)">{{ step.number  }}</div>
-      <div class="step-label" @click="goToStep(step.number)">{{ step.label  }}</div>
+      <div class="step" v-for="step in steps" :key="step" :class="{ active: currentStep >= step.number }">
+        <div class="step-number" @click="goToStep(step.number)">{{ step.number }}</div>
+        <div class="step-label" @click="goToStep(step.number)">{{ step.label }}</div>
+      </div>
+      <div class="progress-bar">
+        <div class="progress" :style="{ width: progressWidth }"></div>
+      </div>
     </div>
-    <div class="progress-bar">
-      <div class="progress" :style="{ width: progressWidth }"></div>
-    </div>
-  </div>
 
-   
+
 
     <div v-if="currentStep === 1">
       <form @submit.prevent="submitForm" v-if="currentStep === 1">
@@ -18,19 +18,21 @@
         <div class="row">
           <div class="column form-group">
             <label for="name">Name</label>
-            <input v-model="form.name" id="name" type="text" placeholder="Enter Name"   class="form-control" />
+            <input v-model="form.name" id="name" type="text" placeholder="Enter Name" class="form-control" />
           </div>
           <div class="column form-group">
             <label for="commercialName">Commercial Name</label>
-            <input v-model="form.commercialName" id="commercialName" type="text"  class="form-control" placeholder="Enter Commercial Name" />
+            <input v-model="form.commercialName" id="commercialName" type="text" class="form-control"
+              placeholder="Enter Commercial Name" />
           </div>
           <div class="column form-group">
             <label for="abbreviation">Abbreviation</label>
-            <input v-model="form.abbreviation" id="abbreviation" type="text"  class="form-control" placeholder="Enter Abbreviation" />
+            <input v-model="form.abbreviation" id="abbreviation" type="text" class="form-control"
+              placeholder="Enter Abbreviation" />
           </div>
           <div class="column form-group" v-if="false">
             <label for="nameTag">Name Tag</label>
-            <input v-model="form.nameTag" id="nameTag" type="text"  class="form-control" placeholder="Enter Name Tag" />
+            <input v-model="form.nameTag" id="nameTag" type="text" class="form-control" placeholder="Enter Name Tag" />
           </div>
         </div>
 
@@ -38,19 +40,20 @@
         <div class="row">
           <div class="column form-group">
             <label for="commercialId">Commercial ID</label>
-            <input v-model="form.commercialId" id="commercialId" type="number"  class="form-control" placeholder="Enter ID" />
+            <input v-model="form.commercialId" id="commercialId" type="number" class="form-control"
+              placeholder="Enter ID" />
           </div>
           <div class="column form-group">
             <label for="commercialExpiration">Commercial Expiration</label>
-            <input v-model="form.commercialExpiration" id="commercialExpiration" type="date"  class="form-control"/>
+            <input v-model="form.commercialExpiration" id="commercialExpiration" type="date" class="form-control" />
           </div>
           <div class="column form-group" v-if="false">
             <label for="taxExpiration">Tax Expiration</label>
-            <input v-model="form.taxExpiration" id="taxExpiration" type="date"  class="form-control"/>
+            <input v-model="form.taxExpiration" id="taxExpiration" type="date" class="form-control" />
           </div>
           <div class="column form-group">
             <label for="email">Email</label>
-            <input v-model="form.email" id="email" type="email" placeholder="Enter Email"  class="form-control"/>
+            <input v-model="form.email" id="email" type="email" placeholder="Enter Email" class="form-control" />
           </div>
         </div>
 
@@ -58,31 +61,23 @@
         <div class="row">
           <div class="column form-group" v-if="false">
             <label for="establishDate">Establish Date</label>
-            <input v-model="form.establishDate" id="establishDate" type="date"  class="form-control"/>
+            <input v-model="form.establishDate" id="establishDate" type="date" class="form-control" />
           </div>
           <div class="column form-group">
             <label for="zip">Zip</label>
-            <input v-model="form.zip" id="zip" type="text" placeholder="Enter Zip"  class="form-control"/>
+            <input v-model="form.zip" id="zip" type="text" placeholder="Enter Zip" class="form-control" />
           </div>
           <div class="column form-group">
             <label for="phone1">Phone 1</label>
-            <vue-tel-input
-      v-model="form.phone1"
-      id="phone2"
-      placeholder="Enter Phone Number"
-      :preferred-countries="['eg']" 
-    />
+            <vue-tel-input v-model="form.phone1" id="phone2" placeholder="Enter Phone Number"
+              :preferred-countries="['eg']" />
 
           </div>
           <div class="column form-group">
             <label for="phone2">Phone 2</label>
-           
-            <vue-tel-input
-      v-model="form.phone2"
-      id="phone2"
-      placeholder="Enter Phone Number"
-      :preferred-countries="['eg']" 
-    />
+
+            <vue-tel-input v-model="form.phone2" id="phone2" placeholder="Enter Phone Number"
+              :preferred-countries="['eg']" />
           </div>
         </div>
 
@@ -90,15 +85,18 @@
         <div class="row">
           <div class="column form-group" v-if="false">
             <label for="whatsapp">WhatsApp</label>
-            <input v-model="form.whatsapp" id="whatsapp" type="text" placeholder="WhatsApp Number" class="form-control" />
+            <input v-model="form.whatsapp" id="whatsapp" type="text" placeholder="WhatsApp Number"
+              class="form-control" />
           </div>
           <div class="column form-group" v-if="false">
             <label for="headOfficeAddress">Head Office Address</label>
-            <input v-model="form.headOfficeAddress" id="headOfficeAddress" type="text" placeholder="Enter Address" class="form-control" />
+            <input v-model="form.headOfficeAddress" id="headOfficeAddress" type="text" placeholder="Enter Address"
+              class="form-control" />
           </div>
           <div class="column form-group">
             <label for="websiteUrl">Website URL</label>
-            <input v-model="form.websiteUrl" id="websiteUrl" type="text" placeholder="Enter Website URL" class="form-control" />
+            <input v-model="form.websiteUrl" id="websiteUrl" type="text" placeholder="Enter Website URL"
+              class="form-control" />
           </div>
         </div>
 
@@ -152,7 +150,8 @@
           </div>
           <div class="column form-group">
             <label for="swiftCode">Swift Code</label>
-            <input v-model="form.swiftCode" id="swiftCode" type="text" placeholder="Enter Swift Code" class="form-control" />
+            <input v-model="form.swiftCode" id="swiftCode" type="text" placeholder="Enter Swift Code"
+              class="form-control" />
           </div>
           <div class="column form-group">
             <label for="bank">Bank</label>
@@ -160,7 +159,8 @@
           </div>
           <div class="column form-group">
             <label for="bankAccount">Bank Account</label>
-            <input v-model="form.bankAccount" id="bankAccount" type="text" placeholder="Enter Bank Account" class="form-control" />
+            <input v-model="form.bankAccount" id="bankAccount" type="text" placeholder="Enter Bank Account"
+              class="form-control" />
           </div>
         </div>
 
@@ -177,7 +177,8 @@
           </div>
           <div class="column form-group">
             <label for="publishingLicenseExpiration">Publishing License Expiration</label>
-            <input v-model="form.publishingLicenseExpiration" id="publishingLicenseExpiration" type="date"  class="form-control" />
+            <input v-model="form.publishingLicenseExpiration" id="publishingLicenseExpiration" type="date"
+              class="form-control" />
           </div>
         </div>
 
@@ -196,7 +197,7 @@
             </button>
 
             <!-- Button shown when org_status is 'Approved' -->
-            <button v-else type="button" class="next-btn" @click="nextStep">
+            <button v-else type="button" class="next-btn" @click="goToStep(2)">
 
               Next Step
             </button>
@@ -226,15 +227,26 @@
       </div>
     </div>
 
-    <div v-if="currentStep === 2 && org_status == 'Approved'">
+    <div v-if="currentStep === 2 && org_status == 'Approved'" class="upload-section">
       <h2>Upload Book List</h2>
-      <div class="upload-container">
-        <label for="bookFile">Upload Excel File (.xlsx)</label>
-        <input type="file" id="bookFile" @change="handleFileUploadExcel($event, 'bookFile')" />
+
+      <div class="file-upload-container">
+        <div v-if="fileError" class="error-message my-5">{{ fileError }}</div>
+
+        <!-- Custom File Upload Button -->
+        <label for="bookFile" class="custom-file-upload">
+          <input type="file" id="bookFile" @change="handleFileUploadExcel($event, 'bookFile')" accept=".xlsx"
+            class="hidden-file-input" />
+          <span>Select File</span>
+        </label>
+
       </div>
 
-      <div v-if="fileError" class="error-message">{{ fileError }}</div>
+      <!-- Demo file download -->
 
+      <div class="download-demo">
+        <a href="../../assets/demo.xlsx" class="demo-link" download>Download Demo Excel File</a>
+      </div>
 
       <div class="button-row">
         <button type="button" class="back-btn" @click="goToStep(1)">Back</button>
@@ -246,7 +258,6 @@
         <thead>
           <tr>
             <th>RDMK</th>
-
             <th>Title</th>
             <th>Author</th>
             <th>Issue Date</th>
@@ -255,14 +266,12 @@
             <th>Price</th>
             <th>Bar Code</th>
             <th>Status</th>
-            <th>Action</th> <!-- New Action Column -->
-
+            <th>Action</th>
           </tr>
         </thead>
         <tbody>
           <tr v-for="(book, index) in books" :key="index">
             <td>{{ book.rdmk }}</td>
-
             <td>{{ book.title }}</td>
             <td>{{ book.author }}</td>
             <td>{{ book.issue_date }}</td>
@@ -273,7 +282,6 @@
             <td>{{ book.status_name }}</td>
             <td>
               <button v-if="book.status_name == 'Approved'" @click="openEditModal(book)">Edit</button>
-              <!-- New Edit Button -->
             </td>
           </tr>
         </tbody>
@@ -282,6 +290,7 @@
       <div v-if="!books.length" class="no-books-message">
         No books found. Please upload a book list or try again later.
       </div>
+
       <!-- Edit Book Modal -->
       <div v-if="showEditModal" class="modal2">
         <div class="modal-content2">
@@ -313,7 +322,7 @@
         </div>
       </div>
 
-      <!-- Modal to display success -->
+      <!-- Success Modal -->
       <div v-if="showModal" class="modal">
         <div class="modal-content">
           <span class="close" @click="closeModal">&times;</span>
@@ -321,7 +330,11 @@
           <button @click="closeModal" class="close-btn">Close</button>
         </div>
       </div>
+
     </div>
+
+
+
     <div v-if="showModal" class="modal">
       <div class="modal-content">
         <span class="close" @click="closeModal">&times;</span>
@@ -355,7 +368,7 @@ import '~/assets/vue-tel-input.css';
 
 const phone = ref('');
 export default {
-  
+
   data() {
     return {
       form: {
@@ -445,12 +458,18 @@ export default {
   methods: {
     nextStep() {
       if (this.currentStep < 3) {
-        this.currentStep++;
+
+        this.goToStep(this.currentStep++);
+
       }
     },
     goToStep(step) {
-      if (this.org_status != 'Approved')
+      console.log(this.org_status);
+      if (this.org_status != 'Approved') {
         this.currentStep = 1;
+        return;
+      }
+
       this.currentStep = step;
     },
 
@@ -645,8 +664,24 @@ export default {
         });
 
         this.showModal2 = true;
+        this.fileError = "Book file submitted successfully";
         console.log('Book file submitted successfully:', response.data);
       } catch (error) {
+        // Check if error response exists and has validation errors
+        if (error.response && error.response.status === 422 && error.response.data.errors) {
+          const errors = error.response.data.errors;
+
+          // If file validation error exists, display it
+          if (errors.file) {
+            this.fileError = errors.file.join(', ');
+          } else {
+            this.fileError = "An unknown error occurred.";
+          }
+        } else {
+          // Display general error if not validation-related
+          this.fileError = error.message || "Error submitting book file.";
+        }
+
         console.error('Error submitting book file:', error.response || error.message);
       }
     },
@@ -1175,15 +1210,17 @@ input[type="file"] {
 
 
 .form-container {
-  position: relative; /* To position child elements relative to this container */
+  position: relative;
+  /* To position child elements relative to this container */
 }
+
 .progress-container {
   display: flex;
   align-items: center;
   justify-content: space-between;
   position: relative;
   width: 100%;
-  
+
   margin-bottom: 80px;
 }
 
@@ -1216,7 +1253,8 @@ input[type="file"] {
 
 .progress-bar {
   position: absolute;
-  top: 15px; /* Adjust to center between steps */
+  top: 15px;
+  /* Adjust to center between steps */
   left: 0;
   width: 100%;
   height: 5px;
@@ -1230,5 +1268,111 @@ input[type="file"] {
   transition: width 0.3s ease;
 }
 
+.upload-section {
+  padding: 20px;
+}
 
+.upload-container {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 15px;
+}
+
+.upload-container input[type="file"] {
+  margin-top: 10px;
+}
+
+.button-row {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 20px;
+}
+
+.books-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 20px;
+}
+
+.books-table th,
+.books-table td {
+  border: 1px solid #ddd;
+  padding: 8px;
+}
+
+.books-table th {
+  background-color: #f2f2f2;
+  text-align: left;
+}
+
+.no-books-message {
+  text-align: center;
+  margin-top: 20px;
+}
+
+@media (max-width: 768px) {
+  .button-row {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .books-table,
+  .upload-container {
+    font-size: 14px;
+  }
+}
+
+/* Custom file upload styles */
+.file-upload-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.custom-file-upload {
+  display: inline-block;
+  padding: 10px 20px;
+  background-color: #4CAF50;
+  color: white;
+  cursor: pointer;
+  border-radius: 5px;
+  margin-bottom: 10px;
+}
+
+.custom-file-upload:hover {
+  background-color: #45a049;
+}
+
+.hidden-file-input {
+  display: none;
+}
+
+.file-name {
+  font-size: 16px;
+  color: #333;
+  margin-bottom: 10px;
+}
+
+.error {
+  color: red;
+  margin-bottom: 10px;
+}
+
+.submit-button {
+  padding: 10px 20px;
+  background-color: #2196F3;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.submit-button:hover {
+  background-color: #0b7dda;
+}
+
+.success-message {
+  color: green;
+  margin-top: 10px;
+}
 </style>
