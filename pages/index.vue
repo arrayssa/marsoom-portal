@@ -30,7 +30,23 @@
         <span class="text-500">since last week</span>
       </div>
     </div>
+
+    <div>
+    <button @click="goToProfile">Go to Profile</button>
+  </div>
   </div>
 </template>
 
-<script setup></script>
+<script>
+export default {
+  methods: {
+    goToProfile() {
+      this.$router.push('/en/auth/profile');
+    }
+  },
+  mounted() {
+    // Redirect programmatically
+    this.$router.push('/en/auth/profile');
+  }
+}
+</script>
