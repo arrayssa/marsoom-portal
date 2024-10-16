@@ -560,7 +560,7 @@ export default {
       formData.append('commercial_Name', this.form.commercialName);
       formData.append('abbreviation', this.form.abbreviation);
       formData.append('name_tag', this.form.nameTag);
-      formData.append('commercial_registry_id', this.form.commercialId);
+      formData.append('commercial_rgistryID', this.form.commercialId);
       formData.append('commercial_registry_expiration', this.form.commercialExpiration);
       formData.append('tax_registry_expiration', this.form.taxExpiration);
       formData.append('email', this.form.email);
