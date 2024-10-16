@@ -1,5 +1,5 @@
 <template>
-  <div class="layout-topbar">
+  <div class="layout-topbar" v-if="isAuthenticated">
 
 
     <button class="p-link layout-topbar-menu-button layout-topbar-button" @click="onTopBarMenuButton()">
@@ -68,6 +68,9 @@ import KSA from '/layout/images/flag/KSA.png';
 const { locale, setLocale } = useI18n();
 const { logUserOut } = useAuthStore();
 const router = useRouter();
+
+const isAuthenticated = computed(() => !!localStorage.getItem('authToken'));
+
 
 const logout = () => {
   logUserOut();

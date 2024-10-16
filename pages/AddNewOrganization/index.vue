@@ -259,7 +259,7 @@
         </div>
       </div>
 
-      <!-- Modal to display success -->
+      <!-- Success Modal -->
       <div v-if="showModal" class="modal">
         <div class="modal-content">
           <span class="close" @click="closeModal">&times;</span>
@@ -310,11 +310,15 @@
       </button>
     </div>
     </div>
+
+
+
     <div v-if="showModal" class="modal">
       <div class="modal-content">
         <span class="close" @click="closeModal">&times;</span>
         <h3>Form Submitted Successfully!</h3>
         <p>Your organization details have been saved.</p>
+        <p v-if="org_status == 'Pending'">Please wait for admin approval to complete steps.</p>
         <p v-if="org_status == 'Pending'">Please wait for admin approval to complete steps.</p>
 
         <button @click="closeModal" class="close-btn">Close</button>
@@ -336,10 +340,12 @@
   <!-- Submit Button -->
 
 </template>
-
 <script>
 import DropFile from '../../components/DropFile.vue';
 
+import '~/assets/vue-tel-input.css';
+
+const phone = ref('');
 export default {
   setup() {
 
@@ -419,6 +425,7 @@ export default {
       showModal: false,
       showModal2: false,
       org: null,
+      org: null,
 
       org_status: '',
       organization_id: '',
@@ -433,6 +440,11 @@ export default {
       selectedIndex: -1, // To keep track of highlighted suggestion
 
     };
+  },
+  computed: {
+    progressWidth() {
+      return `${(this.currentStep / this.steps.length) * 100}%`; // Calculate progress width
+    },
   },
 
   async mounted() {
@@ -462,6 +474,7 @@ export default {
 
     async fetchCountries() {
       const { $axios } = useNuxtApp();
+      const { $axios } = useNuxtApp();
 
       try {
         const response = await $axios.get('countries');  // Replace with your API endpoint
@@ -471,6 +484,7 @@ export default {
       }
     },
     async fetchCities() {
+      const { $axios } = useNuxtApp();
       const { $axios } = useNuxtApp();
 
       if (!this.form.nationalityId) return;
@@ -483,6 +497,7 @@ export default {
     },
     async fetchClassifications() {
       const { $axios } = useNuxtApp();
+      const { $axios } = useNuxtApp();
 
       try {
         const response = await $axios.get('classifications'); // Replace with actual API
@@ -493,6 +508,7 @@ export default {
     },
     async fetchOrganization() {
       const { $axios } = useNuxtApp();
+      const { $axios } = useNuxtApp();
       const token = localStorage.getItem('authToken'); // Get the token from localStorage
 
       try {
@@ -502,6 +518,7 @@ export default {
           }
         });
         this.org = response.data.data.organization; // Assuming the data is inside the `data.organization`
+        const organization = this.org;
         const organization = this.org;
         // Populate the form with the organization's details
         this.form.name = organization.name;
@@ -531,6 +548,7 @@ export default {
         this.form.publishingLicenseExpiration = organization.publishing_license_expiration;
         this.organization_id = organization.id;
         this.org_status = organization.status;
+        this.org_status = organization.status;
 
         // Trigger fetching cities based on the selected nationalityId
         await this.fetchCities();
@@ -539,6 +557,7 @@ export default {
       }
     },
     async submitForm() {
+      const { $axios } = useNuxtApp();
       const { $axios } = useNuxtApp();
 
       // Create FormData to handle both form fields and file uploads
@@ -595,8 +614,11 @@ export default {
 
         this.org_status = response.data.data.status;
         if (this.org_status == 'Approved') {
+        this.org_status = response.data.data.status;
+        if (this.org_status == 'Approved') {
           this.goToStep(2);
         }
+        // alert(this.org_status);
         // alert(this.org_status);
         console.log('Form submitted successfully:', response.data);
         this.showModal = true;
@@ -620,6 +642,7 @@ export default {
 
       try {
         const response = await $axios.get('get_books_by_organization/' + this.organization_id, {
+        const response = await $axios.get('get_books_by_organization/' + this.organization_id, {
           headers: {
             'Authorization': `Bearer ${token}`
           }
@@ -631,6 +654,7 @@ export default {
     },
 
     async submitBookFile() {
+      const { $axios } = useNuxtApp();
       const { $axios } = useNuxtApp();
 
       if (!this.form.bookFile) {
@@ -652,8 +676,24 @@ export default {
         });
 
         this.showModal2 = true;
+        this.fileError = "Book file submitted successfully";
         console.log('Book file submitted successfully:', response.data);
       } catch (error) {
+        // Check if error response exists and has validation errors
+        if (error.response && error.response.status === 422 && error.response.data.errors) {
+          const errors = error.response.data.errors;
+
+          // If file validation error exists, display it
+          if (errors.file) {
+            this.fileError = errors.file.join(', ');
+          } else {
+            this.fileError = "An unknown error occurred.";
+          }
+        } else {
+          // Display general error if not validation-related
+          this.fileError = error.message || "Error submitting book file.";
+        }
+
         console.error('Error submitting book file:', error.response || error.message);
       }
     },
@@ -714,6 +754,7 @@ export default {
       try {
         // Simulating API call to fetch books that match search query
         const { $axios } = useNuxtApp();
+        const { $axios } = useNuxtApp();
         const token = localStorage.getItem('authToken');
         const response = await $axios.get(`employee_search?search=${this.searchQuery}`, {
           headers: {
@@ -722,6 +763,7 @@ export default {
         });
 
         this.suggestions = response.data.data.persons; // Assuming the API returns a list of book suggestions
+        this.search_id = '';
         this.search_id = '';
       } catch (error) {
         console.error('Error fetching suggestions:', error);
@@ -739,6 +781,8 @@ export default {
       if (index >= 0 && index < this.suggestions.length) {
         this.searchQuery = this.suggestions[index].first_name + ' ' + this.suggestions[index].last_name;
         this.search_id = this.suggestions[index].id;
+        this.searchQuery = this.suggestions[index].first_name + ' ' + this.suggestions[index].last_name;
+        this.search_id = this.suggestions[index].id;
 
         this.suggestions = [];
       }
@@ -747,7 +791,10 @@ export default {
       if (this.search_id) {
         try {
           const { $axios } = useNuxtApp();
+          const { $axios } = useNuxtApp();
           // Simulate API call to add the selected book
+          this.add_employee.employee_id = this.search_id;
+          this.add_employee.organization_id = this.organization_id;
           this.add_employee.employee_id = this.search_id;
           this.add_employee.organization_id = this.organization_id;
           const token = localStorage.getItem('authToken');
@@ -755,6 +802,8 @@ export default {
           const response = await $axios.post('add_employee', this.add_employee, {
             headers: {
               'Authorization': `Bearer ${token}`
+            }
+          });
             }
           });
 
@@ -965,6 +1014,8 @@ input[type="file"] {
 
 .back-btn,
 .submit-btn {
+.back-btn,
+.submit-btn {
   padding: 10px 15px;
   border-radius: 5px;
   font-size: 16px;
@@ -988,6 +1039,8 @@ input[type="file"] {
   margin-top: 20px;
 }
 
+.books-table th,
+.books-table td {
 .books-table th,
 .books-table td {
   border: 1px solid #ddd;
@@ -1131,6 +1184,7 @@ input[type="file"] {
     opacity: 0;
     transform: translateY(-10px);
   }
+
 
   to {
     opacity: 1;
