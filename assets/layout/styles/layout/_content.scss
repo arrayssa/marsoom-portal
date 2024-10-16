@@ -1,14 +1,10 @@
 .layout-main-container {
     display: flex;
     flex-direction: column;
-    min-height: 100vh;
     justify-content: space-between;
-    padding: 5rem 0rem 2rem 0rem; /* Original padding values */
-    padding-block-start: 5rem; /* Top padding */
-    padding-block-end: 2rem; /* Bottom padding */
-    // padding-inline-start: 4rem; /* Left padding for LTR, right padding for RTL */
-    // padding-inline-end: 2rem; /* Right padding for LTR, left padding for RTL */
-    transition: margin-inline-start $transitionDuration; /* Changed from margin-left to margin-inline-start */
+    min-height: 100vh;
+    padding: 2.5rem 2rem;
+    transition: margin-left .2s;
 }
 
 .layout-main {

@@ -268,7 +268,7 @@
         </div>
       </div>
     </div>
-    <div v-else>
+    <div v-else-if="currentStep.id === 4 && org_status !== 'Approved'">
       <div class="form-body">
         Waiting for admin approval...
       </div>
@@ -341,6 +341,12 @@
 import DropFile from '../../components/DropFile.vue';
 
 export default {
+  setup() {
+
+    definePageMeta({
+      layout: 'login'
+    });
+  },
   data() {
     return {
       form: {
@@ -541,7 +547,8 @@ export default {
       formData.append('commercial_Name', this.form.commercialName);
       formData.append('abbreviation', this.form.abbreviation);
       formData.append('name_tag', this.form.nameTag);
-      formData.append('commercial_registry_id', this.form.commercialId);
+      // formData.append('commercial_registry_id', this.form.commercialId);
+      formData.append('commercial_rgistryID', this.form.commercialId);
       formData.append('commercial_registry_expiration', this.form.commercialExpiration);
       formData.append('tax_registry_expiration', this.form.taxExpiration);
       formData.append('email', this.form.email);
@@ -652,6 +659,7 @@ export default {
     },
     cancelForm() {
       console.log('Form canceled');
+      this.$router.push('/')
     },
     handleFileUpload(event, field) {
       this.form[field] = event.target.files[0];
@@ -776,9 +784,7 @@ export default {
 </script>
 
 <style scoped>
-.form-container {
-  padding: 20px 0;
-}
+
 
 .modal {
   display: flex;

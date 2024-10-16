@@ -13,7 +13,7 @@
       <InputText :placeholder="$t('search')" class="h-3rem border-round-xl border-1 bg-white" />
     </IconField>
 
-    <div class="layout-topbar-menu gap-7" :class="topbarMenuClasses">
+    <div class="layout-topbar-menu gap-5" :class="topbarMenuClasses">
       <div class="flex align-items-center gap-2">
         <button class="p-link layout-topbar-button border-round-lg border-1 border-200">
           <img src="/layout/images/setting.png" alt="setting" />
@@ -44,8 +44,8 @@
         <Button type="button" @click="toggle" class="bg-white shadow-none w-auto border-0 p-link gap-2" aria-haspopup="true" aria-controls="overlay_menu">
           <img src="/layout/images/user.png" alt="user" />
           <div class="flex flex-start flex-column align-items-start">
-            <div>
-              <span class="text-black-alpha-90 text-sm" :class="$i18n.locale === 'ar' ? 'ml-5' : 'mr-5'">Aman</span>
+            <div class="flex">
+              <span class="text-black-alpha-90 text-sm" :class="$i18n.locale === 'ar' ? 'ml-4' : 'mr-4'">Aman</span>
               <img src="/layout/images/arrow-down.png" alt="vector" />
             </div>
             <span class="text-gray-400 text-xs mt-1">owner</span>
@@ -67,20 +67,17 @@ import KSA from '/layout/images/flag/KSA.png';
 
 const { locale, setLocale } = useI18n();
 const { logUserOut } = useAuthStore();
+const router = useRouter();
 
 const logout = () => {
-  const localePath = useLocalePath();
-  //this.user = null;
- // this.authenticated = false;
-  localStorage.removeItem('authToken');
- // const loginPath = localePath({ name: 'login' });
-  navigateTo('/en/auth/login');
+  logUserOut();
+  // navigateTo('/en/auth/login');
+  router.push('login')
 };
 
 const { layoutConfig, onMenuToggle } = useLayout();
 const outsideClickListener = ref(null);
 const topbarMenuActive = ref(false);
-const router = useRouter();
 
 onMounted(() => {
   bindOutsideClickListener();
@@ -162,10 +159,14 @@ onChangeLanguage();
 // End Change Language
 
 const menu = ref();
-const items = ref([{ label: 'Logout', command: () => logout() }, { label: 'Settings' }]);
+const items = ref([{ label: 'Profile', command: () => goToProfile() }, { label: 'Logout', command: () => logout() }]);
 
 const toggle = (event) => {
   menu.value.toggle(event);
+};
+
+const goToProfile = () => {
+  router.push(`/${storedLang.value}/auth/profile`)
 };
 </script>
 

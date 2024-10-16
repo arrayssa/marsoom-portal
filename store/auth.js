@@ -6,7 +6,7 @@ export const useAuthStore = defineStore('auth', {
   state: () => ({
     user: null,
     error: null,
-    authenticated: !!localStorage.getItem('authToken')
+    authenticated: false,//!!localStorage.getItem('authToken')
   }),
 
   actions: {
@@ -31,9 +31,11 @@ export const useAuthStore = defineStore('auth', {
         throw err;
       }
     },
-    logout() {
+    logUserOut() {
       this.user = null;
-      this.authenticated = false;
+      const token = useCookie('token'); // useCookie new hook in nuxt 3
+      this.authenticated = false; // set authenticated  state value to false
+      token.value = null; // clear the token cookie
       localStorage.removeItem('authToken');
     }
   }

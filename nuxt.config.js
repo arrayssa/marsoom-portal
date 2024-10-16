@@ -15,7 +15,7 @@ export default defineNuxtConfig({
       ]
     }
   },
-  modules: ['nuxt-primevue', '@nuxtjs/i18n', '@pinia/nuxt', '@vee-validate/nuxt'],
+  modules: ['@nuxtjs/tailwindcss', 'nuxt-primevue', '@nuxtjs/i18n', '@pinia/nuxt', '@vee-validate/nuxt'],
   runtimeConfig: {
     public: {
       apiBaseUrl: process.env.API_BASE_URL
@@ -48,6 +48,12 @@ export default defineNuxtConfig({
     }
   },
   css: ['primeicons/primeicons.css', 'primeflex/primeflex.scss', 'primevue/resources/primevue.min.css', '@/assets/styles.scss'],
+  postcss: {
+    plugins: {
+      tailwindcss: {},
+      autoprefixer: {},
+    },
+  },
   vite: {
     optimizeDeps: {
       include: ['@fawmi/vue-google-maps', 'fast-deep-equal']

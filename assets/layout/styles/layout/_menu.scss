@@ -1,3 +1,21 @@
+.layout-sidebar {
+    min-width: 240px;
+    height: fit-content;
+    z-index: 999;
+    user-select: none;
+    top: 0;
+    left: 0;
+    transition: transform $transitionDuration, left $transitionDuration;
+    background-color: var(--surface-overlay);
+    padding: 0.5rem 1.5rem;
+    box-shadow: 0 4px 16px 0 var(--shadow-color);
+    overflow-y: auto !important;
+    position: -webkit-sticky !important; /* Safari */
+    position: sticky !important;
+    top: 0 !important;
+    height: 100vh;
+}
+
 .layout-menu {
     margin: 0;
     padding: 0;
@@ -45,29 +63,35 @@
             align-items: center;
             position: relative;
             outline: 0 none;
-            color: var(--text-color);
+            color: var(--blue5);
+            font-weight: 400;
             cursor: pointer;
-            padding: 1rem 1rem;
+            padding: 0.75rem 1rem;
             border-radius: $borderRadius;
             transition: background-color $transitionDuration, box-shadow $transitionDuration;
+            margin-bottom: 15px;
 
             .layout-menuitem-icon {
-                margin-inline-end: 0.5rem; /* Changed from margin-right to margin-inline-end */
+                margin-right: 0.5rem;
             }
 
             .layout-submenu-toggler {
                 font-size: 75%;
-                margin-inline-start: auto; /* Changed from margin-left to margin-inline-start */
+                margin-left: auto;
+                
                 transition: transform $transitionDuration;
             }
 
             &.active-route {
                 font-weight: 700;
-                color: var(--primary-color);
+                color: #fff;
+                background-color: var(--active-color);
             }
 
-            &:hover {
-                background-color: var(--surface-hover);
+            &:hover, &.router-link-active {
+                background-color: var(--active-color);
+                color: #fff;
+                box-shadow: 0 4px 8px 0 var(--shadow-color);
             }
 
             &:focus {
@@ -81,32 +105,32 @@
 
             li {
                 a {
-                    margin-inline-start: 1rem; /* Changed from margin-left to margin-inline-start */
+                    margin-left: 1rem;
                 }
 
                 li {
                     a {
-                        margin-inline-start: 2rem; /* Changed from margin-left to margin-inline-start */
+                        margin-left: 2rem;
                     }
 
                     li {
                         a {
-                            margin-inline-start: 2.5rem; /* Changed from margin-left to margin-inline-start */
+                            margin-left: 2.5rem;
                         }
 
                         li {
                             a {
-                                margin-inline-start: 3rem; /* Changed from margin-left to margin-inline-start */
+                                margin-left: 3rem;
                             }
 
                             li {
                                 a {
-                                    margin-inline-start: 3.5rem; /* Changed from margin-left to margin-inline-start */
+                                    margin-left: 3.5rem;
                                 }
 
                                 li {
                                     a {
-                                        margin-inline-start: 4rem; /* Changed from margin-left to margin-inline-start */
+                                        margin-left: 4rem;
                                     }
                                 }
                             }
