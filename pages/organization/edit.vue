@@ -417,12 +417,14 @@ export default {
         formData.append('publishing_file', this.form.publishingFile);
       }
 
+      formData.append('_method', 'PUT');
+
       // Retrieve the Bearer token from localStorage
       const token = localStorage.getItem('authToken');
 
       try {
         // Send form data with authorization token
-        const response = await $axios.put('organizations/'+this.org.id, formData, {
+        const response = await $axios.post('organizations/'+this.org.id, formData, {
           headers: {
             'Authorization': `Bearer ${token}`,
             'Content-Type': 'multipart/form-data'

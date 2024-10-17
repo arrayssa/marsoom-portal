@@ -25,73 +25,26 @@
         </div>
       </div>
     </div>
-    <div class="form-body">
-        <table v-if="orgStore.organization && orgStore.books?.length" class="min-w-full table-auto border-collapse text-left bg-white shadow-md rounded-md overflow-hidden">
-          <thead class="bg-gray-50">
-            <tr class="bg-primary">
-              <th class="px-4 py-2 border-b text-white font-medium">RDMK</th>
-              <th class="px-4 py-2 border-b text-white font-medium">Title</th>
-              <th class="px-4 py-2 border-b text-white font-medium">Author</th>
-              <th class="px-4 py-2 border-b text-white font-medium">Issue Date</th>
-              <th class="px-4 py-2 border-b text-white font-medium">Language</th>
-              <th class="px-4 py-2 border-b text-white font-medium">Status</th>
-              <th class="px-4 py-2 border-b text-white font-medium">Quantity</th>
-              <th class="px-4 py-2 border-b text-white font-medium">Price</th>
-              <th class="px-4 py-2 border-b text-white font-medium">Bar Code</th>
-              <th class="px-4 py-2 border-b text-white font-medium">Action</th> <!-- New Action Column -->
-            </tr>
-          </thead>
-          <tbody>
-            <tr v-for="(book, index) in orgStore.books" :key="index" class="hover:bg-gray-50">
-              <td class="px-4 py-2 border-b">{{ book.rdmk }}</td>
-              <td class="px-4 py-2 border-b">{{ book.title }}</td>
-              <td class="px-4 py-2 border-b">{{ book.author }}</td>
-              <td class="px-4 py-2 border-b">{{ book.issue_date }}</td>
-              <td class="px-4 py-2 border-b">{{ book.book_language }}</td>
-              <td class="px-4 py-2 border-b">
-                <span
-                  :class="{
-                    'bg-yellow-100 text-yellow-800': book.status_name === 'Pending',
-                    'bg-green-100 text-green-800': book.status_name === 'Approved',
-                    'bg-red-100 text-red-800': book.status_name === 'Rejected'
-                  }"
-                  class="px-2 py-1 text-xs font-semibold rounded-full"
-                >
-                  {{ book.status_name }}
-                </span>
-              </td>
-              <td class="px-4 py-2 border-b">{{ book.quantity }}</td>
-              <td class="px-4 py-2 border-b">{{ book.price }}</td>
-              <td class="px-4 py-2 border-b">{{ book.barcode }}</td>
-              <td class="px-4 py-2 border-b">
-                <button v-if="book.status_name == 'Approved'" @click="openEditModal(book)" class="text-blue-500 hover:text-blue-700 font-semibold">Edit</button> <!-- New Edit Button -->
-              </td>
-            </tr>
-          </tbody>
-        </table>
-
-        <div v-if="!orgStore.books?.length" class="no-books-message">
-          No books found. Please upload a book list or try again later.
-        </div>
-      </div>
-    <!-- <DataTable v-else :loading="pending" :value="data?.data?.rows" lazy paginator :totalRecords="data?.data?.meta.total" :rows="perPage" @page="handlePageChange" tableStyle="min-width: 50rem">
+    <DataTable v-if="orgStore.organization !== null && orgStore.organization.status === 'Approved'" :loading="pending" :value="data?.data?.rows" lazy paginator :totalRecords="data?.data?.meta.total" :rows="perPage" @page="handlePageChange" tableStyle="min-width: 50rem">
       <Column field="rdmk" :header="$t('RDMK')"></Column>
       <Column field="title" :header="$t('title')"></Column>
       <Column field="author" :header='$t("Writer name")'></Column>
-      <Column field="author_nationality" :header='$t("Nationality")'></Column>
-      <Column field="publisher_name" :header='$t("Publishing")'></Column>
-      <Column field="book_language" :header='$t("book_language")'></Column>
       <Column field="issue_date" :header='$t("issue_date")'></Column>
+      <Column field="book_language" :header='$t("Language")'></Column>
+      <Column field="status_name" :header='$t("Status")'></Column>
+      <Column field="quantity" :header='$t("Quantity")'></Column>
+      <Column field="price" :header='$t("Price")'></Column>
+      <Column field="barcode" :header='$t("Barcode")'></Column>
       <Column field="actions" :header="$t('action')" style="width: 10rem">
         <template #body="slotProps">
           <div class="flex justify-center">
 
-            <Button type="button" text class="text-blue3" icon="pi pi-ellipsis-h" @click="toggle($event, slotProps.data.id)" aria-haspopup="true" aria-controls="overlay_menu" />
-            <Menu ref="menu" :model="actionsMenu" class="bg-white" id="overlay_menu" :popup="true" />
+            <Button type="button" text v-if="slotProps.data.status_name ==='Approved'" icon="pi pi-pencil" @click="openEditModal(slotProps.data)" label="Edit" />
+            <!-- <Menu ref="menu" :model="actionsMenu" class="bg-white" id="overlay_menu" :popup="true" /> -->
           </div>
         </template>
       </Column>
-    </DataTable> -->
+    </DataTable>
   </div>
   <div v-if="showModal2" class="modal">
     <div class="modal-content">
@@ -161,13 +114,12 @@
       </div>
     </div>
   </div>
-
 </template>
 
 <script setup>
 // const addEditInterest = defineAsyncComponent(() => import('./add-edit-book.vue'));
 import Form from './add-edit-book.vue'
-import { fetchApi } from '../../composables/useApi';
+import { useGetApi } from '../../composables/useApi';
 import { useOrganizationStore } from '../../store/auth';
 import { onMounted, ref } from 'vue';
 
@@ -178,6 +130,7 @@ const orgStore = useOrganizationStore();
 
 const menu = ref();
 const selectedId = ref();
+const selectedBook = ref();
 
 let visible = ref(false);
 let perPage = ref(10);
@@ -194,7 +147,7 @@ const handlePageChange = (event) => {
   currentPage.value = event.page + 1;
 };
 
-const { pending, data, refresh } = fetchApi(`get_books_by_organization/${orgStore.organization?.id}`, {
+const { pending, data, refresh } = useGetApi(`get_books_by_organization/${orgStore.organization?.id}`, {
   limit: perPage,
   page: currentPage
 });
@@ -336,8 +289,8 @@ const handleFileRemove = () => {
   bookFile.value = null;
 }
 
-const openModal = () => {
-  selectedId.value = null;
+const openModal = (event, book) => {
+  selectedBook.value = book;
   visible.value = true;
 }
 
@@ -357,61 +310,8 @@ const closeEditModal = () => {
   orgStore.fetchBooks();
 };
 
-const deleteConfirm = () => {
-  confirm.require({
-    message: t('deleteConfirm'),
-    header: t('delete'),
-    rejectClass: 'p-button-text p-button-text bg-primary',
-    acceptClass: 'p-button-danger p-button-text bg-red-500 text-white',
-    acceptLabel: t('yes'),
-    rejectLabel: t('no'),
-    accept: () => {
-      use$Fetch(`books/${selectedId.value}`, { method: 'DELETE' }).then(() => {
-
-        refresh();
-        toast.add({ severity: 'info', summary: t('common.confirmed'), detail: t('common.doneDeleted'), life: 3000 });
-      })
-    },
-
-    reject: () => {}
-  });
-};
-
-const reject = () => {
-  confirm.require({
-    message: t('Do you want to Reject this book?'),
-    header: t('Reject'),
-    rejectClass: 'p-button-text p-button-text bg-primary',
-    acceptClass: 'p-button-danger p-button-text bg-red-500 text-white',
-    acceptLabel: t('yes'),
-    rejectLabel: t('no'),
-    accept: async () => {
-      try {
-
-        await    use$Fetch(`review-books`,{ method:  'POST', body: {'book_id':selectedId.value,'block':1} });
-        refresh();
-        toast.add({ severity: 'info', summary: t('confirmed'), detail: t('doneUpdated'), life: 3000 });
-      } catch (error) {
-        toast.add({ severity: 'error', summary: 'Error Message', detail: error, life: 3000 });
-      }
-    },
-    reject: () => {}
-  });
-};
-const approve = () => {
-  try {
-
-     use$Fetch(`review-books`,{ method:  'POST', body: {'book_id':selectedId.value,'block':0} });
-
-    refresh();
-    toast.add({ severity: 'info', summary: t('confirmed'), detail: t('doneUpdated'), life: 3000 });
-  } catch (error) {
-    toast.add({ severity: 'error', summary: 'Error Message', detail: error, life: 3000 });
-  }
-};
-
 await orgStore.fetchOrganization();
-await orgStore.fetchBooks();
+// await orgStore.fetchBooks();
 </script>
 
 <style>
