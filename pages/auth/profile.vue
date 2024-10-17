@@ -64,7 +64,7 @@
 
     </div>
     <div class="button-container" v-if="profile.user.role=='manager'">
-      <router-link :to="`/` + $i18n.locale + `/AddNewOrganization`" class="add-organization-button">Add organization account</router-link>
+      <router-link :to="`/` + $i18n.locale + `/organization`" class="add-organization-button">Add organization account</router-link>
     </div>
   </div>
 </template>

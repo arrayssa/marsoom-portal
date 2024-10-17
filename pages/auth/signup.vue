@@ -63,9 +63,14 @@ import { useRuntimeConfig } from '#imports';
 
 export default {
   setup() {
+    definePageMeta({
+      layout: 'login'
+    });
     const signupStore = useSignupStore();
     const cities = ref([]);
     const router = useRouter();
+    const { locale } = useI18n();
+
     // Fetch cities from API when the component is mounted
     onMounted(async () => {
       try {
@@ -89,7 +94,7 @@ export default {
         //console.log(data.user);
 
         localStorage.setItem('authToken',  data.token);
-        router.push('/en/auth/profile');
+        router.push(`/${locale.value}/auth/profile`);
 
         console.log('Signup successful');
       } catch (error) {

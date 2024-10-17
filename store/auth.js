@@ -96,7 +96,7 @@ export const useSignupStore = defineStore('signup', {
             'Content-Type': 'multipart/form-data'
           }
         };
-        console.log({ data: formData.get('first_name') });
+        // console.log({ data: formData.get('first_name') });
         const response = await axios.post(useRuntimeConfig().public.apiBaseUrl +'auth/register', formData, config);
 
         if (!response) {

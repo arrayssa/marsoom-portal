@@ -13,14 +13,17 @@
           </div>
           <div>
             <InputText id="email1" v-model="user.email" type="email" placeholder="Enter Email" class="w-full mb-5" style="padding: 1rem" />
-            <Password id="password1" v-model="user.password" placeholder="Password" :toggleMask="true" class="w-full mb-3" inputClass="w-full" :inputStyle="{ padding: '1rem' }"></Password>
+            <Password id="password1" v-model="user.password" placeholder="Password" :toggleMask="false" class="w-full mb-3" inputClass="w-full" :inputStyle="{ padding: '1rem' }"></Password>
             <Button label="Sign In" class="w-full p-3 text-xl mt-5 bg-primary" @click="login"></Button>
             <div class="flex align-items-center justify-content-between mt-4 gap-5">
               <div class="flex align-items-center">
                 <Checkbox id="rememberme1" v-model="checked" binary class="mr-2"></Checkbox>
                 <label for="rememberme1">Remember me</label>
               </div>
-              <router-link :to="`/` + $i18n.locale + `/auth/signup`" class="font-medium no-underline ml-2 text-right cursor-pointer" style="color: var(--primary-color)"> Don't Have An Account! </router-link>
+              <NuxtLink :to="`/${$i18n.locale}/auth/signup`">
+                <Button :label="$t('Don\'t Have An Account!')" class="font-medium no-underline ml-2 text-right cursor-pointer" style="color: var(--primary-color)"/>
+              </NuxtLink>
+              <!-- <router-link :to="`/` + $i18n.locale + `/auth/signup`" class="font-medium no-underline ml-2 text-right cursor-pointer" style="color: var(--primary-color)"> Don't Have An Account! </router-link> -->
             </div>
           </div>
         </div>
@@ -46,13 +49,14 @@ const user = ref({
 const checked = ref(false);
 const errorMessage = ref('');
 const router = useRouter();
+const { locale } = useI18n();
 
 const login = async () => {
   try {
     errorMessage.value = ''; // Reset error message
     await authStore.authenticateUser(user.value);
     if (authStore.authenticated) {
-      router.push('/en/auth/profile');
+      router.push(`/${locale.value}/auth/profile`);
     }
   } catch (error) {
     console.error('Authentication failed:', error);
