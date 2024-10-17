@@ -20,7 +20,7 @@ const model = computed(() => {
       items: [
         // { label: 'Dashboard', to: '/' },
         { label: t('Org Information'), to: `/${storedLang.value}/organization` },
-        { label: t('Books'), to: 'books'},
+        { label: t('Books'), to: `/${storedLang.value}/books`},
       ]
     }
   ];
