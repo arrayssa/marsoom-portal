@@ -34,6 +34,10 @@ import { ref } from 'vue';
 import { useAuthStore } from '@/store/auth';
 import { useRouter } from 'vue-router';
 
+definePageMeta({
+  layout: 'login'
+});
+
 const authStore = useAuthStore();
 const user = ref({
   email: '',
