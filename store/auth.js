@@ -138,7 +138,8 @@ export const useProfileStore = defineStore('profile', {
 
 export const useOrganizationStore = defineStore('organization', {
     state: () => ({
-        organization: null
+        organization: null,
+        books: []
     }),
     actions: {
         async fetchOrganization() {
@@ -156,6 +157,21 @@ export const useOrganizationStore = defineStore('organization', {
             } catch (error) {
                 console.error('Failed to fetch profile:', error);
             }
-        }
+        },
+        async fetchBooks() {
+          try {
+            const api = axios.create({
+                baseURL: useRuntimeConfig().public.apiBaseUrl ,
+                headers: {
+                    Authorization: `Bearer ${localStorage.getItem('authToken')}`, // Add the token to the Authorization header
+                    'Access-Control-Allow-Origin': '*', // Allow all origins (adjust this based on your security needs)
+                },
+            });
+            const response = await api.get('get_books_by_organization/' + this.organization.id);
+            this.books = response.data.data.books; // Set the response data to books
+          } catch (error) {
+            console.error('Error fetching books:', error);
+          }
+        },
     }
 });

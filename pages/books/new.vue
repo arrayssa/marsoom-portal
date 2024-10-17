@@ -314,7 +314,6 @@
         <h3>Form Submitted Successfully!</h3>
         <p>Your organization details have been saved.</p>
         <p v-if="org_status == 'Pending'">Please wait for admin approval to complete steps.</p>
-        <p v-if="org_status == 'Pending'">Please wait for admin approval to complete steps.</p>
 
         <button @click="closeModal" class="close-btn">Close</button>
       </div>
@@ -342,12 +341,12 @@ import '~/assets/vue-tel-input.css';
 
 const phone = ref('');
 export default {
-  setup() {
+  // setup() {
 
-    definePageMeta({
-      layout: 'login'
-    });
-  },
+  //   definePageMeta({
+  //     layout: 'login'
+  //   });
+  // },
   data() {
     return {
       form: {
@@ -419,7 +418,6 @@ export default {
       fileError: '',
       showModal: false,
       showModal2: false,
-      org: null,
       org: null,
 
       org_status: '',

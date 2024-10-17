@@ -1,5 +1,5 @@
 <template>
-  <div class="" style="background-color: #FFFFFF;">
+  <div class="">
     <div class="layout-main-container">
       <div class="layout-main">
         <NuxtPage />

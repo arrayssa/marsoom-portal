@@ -11,7 +11,7 @@ export default defineNuxtRouteMiddleware((to, from) => {
   }
 
   // Array of route names to check
-  const authRoutes = ['/auth/login', '/auth/signup'];
+  const authRoutes = ['/en/auth/login', '/auth/signup'];
 
   // Check if the route name starts with any of the auth routes
   if (token.value && authRoutes.some((route) => to.path.startsWith(route))) {
@@ -21,6 +21,6 @@ export default defineNuxtRouteMiddleware((to, from) => {
   // If not authenticated and trying to access any page other than auth routes, redirect to login page
   if (!token.value && !authRoutes.some((route) => to.path.startsWith(route))) {
      abortNavigation();
-     return navigateTo('/auth/login');
+     return navigateTo('/en/auth/login');
  }
 });

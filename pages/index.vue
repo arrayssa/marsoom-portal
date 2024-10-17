@@ -97,10 +97,10 @@ const login = async () => {
     if (authStore.authenticated) {
       router.push('/en/auth/profile');
     }
-  },
-  mounted() {
+  }
+  catch(error) {
     // Redirect programmatically
-    this.$router.push('/en/auth/profile');
+    // this.$router.push('/en/auth/profile');
   }
 }
 </script>

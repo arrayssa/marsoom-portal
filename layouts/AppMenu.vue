@@ -19,15 +19,8 @@ const model = computed(() => {
     {
       items: [
         // { label: 'Dashboard', to: '/' },
-        { label: t('Org Information'), to: `/${storedLang.value}/organization/settings` },
-        { label: t('cities'), to: '/cities' },
-        { label: t('persons'), to: '/persons' },
-        { label: t('interest'), to: '/interest' },
-        { label: t('events'), to: '/events' },
-        { label: t('Pending Books'), to: 'books'},
-        { label: t('Approved Books'), to: 'approvedBooks'},
-        { label: t('Rejected Books'), to: 'rejectedBooks'},
-        { label: t('request'), to: 'request'},
+        { label: t('Org Information'), to: `/${storedLang.value}/organization` },
+        { label: t('Books'), to: 'books'},
       ]
     }
   ];

@@ -1,21 +1,15 @@
 <template>
   <div class="form-container">
-    <div class="backBtn">
-      <div v-if="currentStep.id > 1">
-        <i class="icon pi pi-arrow-left" @click="goToStep(currentStep.id-1)"></i>
-        <span class="title">{{ currentStep.title }}</span>
-      </div>
-    </div>
-    <div class="steps-container">
+    <div class="steps-container rounded-md border-gray-200">
       <div v-for="(step, index) in steps" :key="index" :class="{ active: currentStep.id === step.id }" @click="goToStep(step.id)">
         <span class="number">{{ step.id }}</span>
         <span class="title">{{ step.title }}</span>
-        <span class="spacer" v-if="step.id < 4">- -- -- -</span>
+        <span class="spacer" v-if="step.id < 3">- -- -- -</span>
       </div>
     </div>
     <div v-if="currentStep.id === 1">
       <form @submit.prevent="goToStep(2)" v-if="currentStep.id === 1">
-        <div class="form-body">
+        <div class="block p-10 mt-5 bg-white rounded-md border-gray-200 border">
           <!-- Row 1 -->
           <div class="row">
             <div class="column">
@@ -93,7 +87,7 @@
 
     <div v-if="currentStep.id === 2">
       <form @submit.prevent="goToStep(3)" v-if="currentStep.id === 2">
-        <div class="form-body">
+        <div class="block p-10 mt-5 bg-white rounded-md border-gray-200 border">
           
           <!-- File Uploads -->
           <div class="row">
@@ -136,8 +130,8 @@
     </div>
 
     <div v-if="currentStep.id === 3">
-      <form @submit.prevent="goToStep(4)" v-if="currentStep.id === 3">
-        <div class="form-body">
+      <form @submit.prevent="submitForm" v-if="currentStep.id === 3">
+        <div class="block p-10 mt-5 bg-white rounded-md border-gray-200 border">
           
           <div class="row">
             <div class="column">
@@ -162,170 +156,16 @@
         <!-- Submit Button -->
         <div class="button-row">
           <button type="button" class="cancel-btn" @click="cancelForm">Cancel</button>
-          <button type="submit" class="next-btn">Next step</button>
+          <button type="submit" class="next-btn">Update</button>
         </div>
       </form>
     </div>
-
-    <div v-if="currentStep.id === 4">
-      <div class="form-body">
-        <div class="upload-container">
-          <label for="bookFile">Upload Excel File (.xlsx)</label>
-          <DropFile
-              field="bookFile"
-              :fileData="form.bookFile"
-              @file-changed="handleFileUploadExcel"
-              @file-removed="handleFileRemove"
-            />
-        </div>
-  
-        <div v-if="fileError" class="error-message">{{ fileError }}</div>
-      </div>
-
-      <div class="button-row">
-        <button type="button" class="back-btn" @click="goToStep(1)">Back</button>
-        <button type="button" class="submit-btn" @click="submitForm">Submit</button>
-      </div>
-
-      <div class="form-body">
-        <h5>Books List</h5>
-        <table v-if="books && books.length" class="books-table">
-          <thead>
-            <tr>
-              <th>RDMK</th>
-
-              <th>Title</th>
-              <th>Author</th>
-              <th>Issue Date</th>
-              <th>Language</th>
-              <th>Quantity</th>
-              <th>Price</th>
-              <th>Bar Code</th>
-              <th>Action</th> <!-- New Action Column -->
-
-            </tr>
-          </thead>
-          <tbody>
-            <tr v-for="(book, index) in books" :key="index">
-              <td>{{ book.rdmk }}</td>
-
-              <td>{{ book.title }}</td>
-              <td>{{ book.author }}</td>
-              <td>{{ book.issue_date }}</td>
-              <td>{{ book.book_language }}</td>
-              <td>{{ book.quantity }}</td>
-              <td>{{ book.price }}</td>
-              <td>{{ book.barcode }}</td>
-              <td>
-                <button v-if="book.status_name == 'Approved'" @click="openEditModal(book)">Edit</button>
-                <!-- New Edit Button -->
-              </td>
-            </tr>
-          </tbody>
-        </table>
-
-        <div v-if="!books.length" class="no-books-message">
-          No books found. Please upload a book list or try again later.
-        </div>
-      </div>
-      <!-- Edit Book Modal -->
-      <div v-if="showEditModal" class="modal2">
-        <div class="modal-content2">
-          <div class="modal-header">
-            <h3>Edit Book</h3>
-            <button class="close-btn" @click="closeEditModal">&times;</button>
-          </div>
-          <div class="modal-body">
-            <div class="form-group">
-              <label for="quantity">Quantity:</label>
-              <input type="number" v-model="editBook.quantity" id="quantity" />
-            </div>
-
-            <div class="form-group">
-              <label for="price">Price:</label>
-              <input type="number" v-model="editBook.price" id="price" />
-            </div>
-
-            <div class="form-group">
-              <label for="barcode">Barcode:</label>
-              <input type="text" v-model="editBook.barcode" id="barcode" />
-            </div>
-          </div>
-
-          <div class="modal-footer">
-            <button class="btn btn-save" @click="saveChanges">Save</button>
-            <button class="btn btn-cancel" @click="closeEditModal">Cancel</button>
-          </div>
-        </div>
-      </div>
-
-      <!-- Success Modal -->
-      <div v-if="showModal" class="modal">
-        <div class="modal-content">
-          <span class="close" @click="closeModal">&times;</span>
-          <h3>File Submitted Successfully!</h3>
-          <button @click="closeModal" class="close-btn">Close</button>
-        </div>
-      </div>
-    </div>
-    <div v-if="currentStep.id === 5 && org_status == 'Approved'">
-      <div class="autocomplete-container" v-if="org_status=='Approved'&&!org.employee">
-      <label for="search">Search Employee (by name, email or phone:</label>
-      <input
-          type="text"
-          id="search"
-          v-model="searchQuery"
-          @input="fetchSuggestions"
-          @keydown.down="highlightSuggestion(1)"
-          @keydown.up="highlightSuggestion(-1)"
-          @keydown.enter="selectSuggestion"
-          placeholder="Start typing the book title..."
-          class="autocomplete-input"
-      />
-
-      <!-- Suggestions Dropdown -->
-      <ul v-if="suggestions.length" class="suggestions-list">
-        <li
-            v-for="(suggestion, index) in suggestions"
-            :key="index"
-            :class="{ 'highlighted': index === selectedIndex }"
-            @click="selectSuggestion(index)"
-            @mouseover="highlightIndex(index)"
-        >
-          {{ suggestion.first_name }}  {{ suggestion.last_name }}
-        </li>
-      </ul>
-
-      <button
-          v-if="search_id"
-          @click="addSelectedEmployee"
-          class="add-book-btn"
-      >
-        Add Employee
-      </button>
-    </div>
-    </div>
-
-
-
     <div v-if="showModal" class="modal">
       <div class="modal-content">
         <span class="close" @click="closeModal">&times;</span>
         <h3>Form Submitted Successfully!</h3>
         <p>Your organization details have been saved.</p>
         <p v-if="org_status == 'Pending'">Please wait for admin approval to complete steps.</p>
-        <p v-if="org_status == 'Pending'">Please wait for admin approval to complete steps.</p>
-
-        <button @click="closeModal" class="close-btn">Close</button>
-      </div>
-    </div>
-
-    <div v-if="showModal2" class="modal">
-      <div class="modal-content">
-        <span class="close" @click="closeModal">&times;</span>
-        <h3>Form Submitted Successfully!</h3>
-        <p>Your book list have been uploaded.</p>
-        <p>Please wait for admin approval to Your book list.</p>
 
         <button @click="closeModal" class="close-btn">Close</button>
       </div>
@@ -342,12 +182,6 @@ import '~/assets/vue-tel-input.css';
 
 const phone = ref('');
 export default {
-  setup() {
-
-    definePageMeta({
-      layout: 'login'
-    });
-  },
   data() {
     return {
       form: {
@@ -411,10 +245,6 @@ export default {
           'id': 3,
           'title': 'Bank account'
         },
-        {
-          'id': 4,
-          'title': 'Upload Books list'
-        },
       ],
       fileError: '',
       showModal: false,
@@ -449,7 +279,6 @@ export default {
     await this.fetchCountries();
     await this.fetchClassifications();
     await this.fetchOrganization();
-    await this.fetchBooks();
 
   },
   methods: {
@@ -593,98 +422,23 @@ export default {
 
       try {
         // Send form data with authorization token
-        const response = await $axios.post('organizations', formData, {
+        const response = await $axios.put('organizations/'+this.org.id, formData, {
           headers: {
             'Authorization': `Bearer ${token}`,
             'Content-Type': 'multipart/form-data'
           }
         });
 
-        this.submitBookFile()
-        // this.org_status = response.data.data.status;
-        // if (this.org_status == 'Approved') {
-        //   this.goToStep(2);
-        // }
-        // alert(this.org_status);
-        // alert(this.org_status);
+        this.org_status = response.data.data.status;
         console.log('Form submitted successfully:', response.data);
-        // this.showModal = true;
+        this.showModal = true;
       } catch (error) {
         console.error('Error submitting form:', error.response || error.message);
       }
     },
-    handleFileUploadExcel(file, field) {
-      // const file = event.target.files[0];
-      if (file && file.type === "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet") {
-        this.form[field] = file; // Assign the file to the form field
-        this.fileError = ''; // Clear any previous errors
-      } else {
-        this.fileError = "Please upload a valid Excel file (.xlsx)";
-      }
-    },
-    async fetchBooks() {
-      // Use Nuxt.js $axios for making the API call
-      const { $axios } = useNuxtApp();
-      const token = localStorage.getItem('authToken'); // Get the token from localStorage
-
-      try {
-        const response = await $axios.get('get_books_by_organization/' + this.organization_id, {
-          headers: {
-            'Authorization': `Bearer ${token}`
-          }
-        });
-        this.books = response.data.data.books; // Set the response data to books
-      } catch (error) {
-        console.error('Error fetching books:', error);
-      }
-    },
-
-    async submitBookFile() {
-      const { $axios } = useNuxtApp();
-
-      if (!this.form.bookFile) {
-        this.fileError = "Please upload an Excel file before submitting.";
-        return;
-      }
-
-      const formData = new FormData();
-      formData.append('file', this.form.bookFile);
-      formData.append('organization_id', this.organization_id);
-
-      try {
-        const token = localStorage.getItem('authToken');
-        const response = await $axios.post('import_books', formData, {
-          headers: {
-            'Authorization': `Bearer ${token}`,
-            'Content-Type': 'multipart/form-data'
-          }
-        });
-
-        this.showModal2 = true;
-        this.fileError = "Form submitted successfully";
-        console.log('Book file submitted successfully:', response.data);
-      } catch (error) {
-        // Check if error response exists and has validation errors
-        if (error.response && error.response.status === 422 && error.response.data.errors) {
-          const errors = error.response.data.errors;
-
-          // If file validation error exists, display it
-          if (errors.file) {
-            this.fileError = errors.file.join(', ');
-          } else {
-            this.fileError = "An unknown error occurred.";
-          }
-        } else {
-          // Display general error if not validation-related
-          this.fileError = error.message || "Error submitting book file.";
-        }
-
-        console.error('Error submitting book file:', error.response || error.message);
-      }
-    },
     cancelForm() {
       console.log('Form canceled');
-      this.$router.push('/')
+      this.$router.push('/en/organization')
     },
     handleFileUpload(event, field) {
       this.form[field] = event.target.files[0];
@@ -692,114 +446,7 @@ export default {
     closeModal() {
       // Close the modal
       this.showModal = false;
-      this.showModal2 = false;
-      this.$router.push('/')
-
-    },
-    openEditModal(book) {
-      this.showEditModal = true;
-      // Create a copy of the book to edit, so original data remains unchanged until saved
-      this.editBook = { ...book };
-      this.originalBook = book; // Store a reference to the original book
-    },
-    closeEditModal() {
-      this.showEditModal = false;
-      this.editBook = {};
-    },
-    saveChanges() {
-      // Update the original book with the edited values
-      this.originalBook.quantity = this.editBook.quantity;
-      this.originalBook.price = this.editBook.price;
-      this.originalBook.barcode = this.editBook.barcode;
-      const token = localStorage.getItem('authToken');
-
-      // Close the modal after saving changes
-
-      // You could also send the updated book data to the backend here, using $axios.put or $axios.post if needed
-      // Example:
-      const { $axios } = useNuxtApp();
-      $axios.post(`books_update_quantity/${this.originalBook.id}`, this.originalBook, {
-        headers: {
-          'Authorization': `Bearer ${token}`
-        }
-      })
-        .then(response => {
-          console.log('Book updated successfully');
-        })
-        .catch(error => {
-          console.error('Error updating book:', error);
-        });
-      this.closeEditModal();
-
-    },
-    async fetchSuggestions() {
-      if (this.searchQuery.length < 3) {
-        this.suggestions = [];
-        return;
-      }
-      try {
-        // Simulating API call to fetch books that match search query
-        const { $axios } = useNuxtApp();
-        const token = localStorage.getItem('authToken');
-        const response = await $axios.get(`employee_search?search=${this.searchQuery}`, {
-          headers: {
-            'Authorization': `Bearer ${token}`,
-          }
-        });
-
-        this.suggestions = response.data.data.persons; // Assuming the API returns a list of book suggestions
-        this.search_id = '';
-        this.search_id = '';
-      } catch (error) {
-        console.error('Error fetching suggestions:', error);
-      }
-    },
-    highlightSuggestion(direction) {
-      if (!this.suggestions.length) return;
-      const total = this.suggestions.length;
-      this.selectedIndex = (this.selectedIndex + direction + total) % total; // Circular navigation
-    },
-    highlightIndex(index) {
-      this.selectedIndex = index;
-    },
-    selectSuggestion(index = this.selectedIndex) {
-      if (index >= 0 && index < this.suggestions.length) {
-        this.searchQuery = this.suggestions[index].first_name + ' ' + this.suggestions[index].last_name;
-        this.search_id = this.suggestions[index].id;
-        this.searchQuery = this.suggestions[index].first_name + ' ' + this.suggestions[index].last_name;
-        this.search_id = this.suggestions[index].id;
-
-        this.suggestions = [];
-      }
-    },
-    async addSelectedEmployee() {
-      if (this.search_id) {
-        try {
-          const { $axios } = useNuxtApp();
-          // Simulate API call to add the selected book
-          this.add_employee.employee_id = this.search_id;
-          this.add_employee.organization_id = this.organization_id;
-          this.add_employee.employee_id = this.search_id;
-          this.add_employee.organization_id = this.organization_id;
-          const token = localStorage.getItem('authToken');
-
-          const response = await $axios.post('add_employee', this.add_employee, {
-            headers: {
-              'Authorization': `Bearer ${token}`
-            }
-          });
-
-          // Add the selected book to the local books array
-
-          // Clear the search input and selected book
-          this.searchQuery = '';
-          this.search_id = null;
-
-          alert('Employee added successfully! please wait for his acceptance');
-        } catch (error) {
-          console.error('Error adding book:', error);
-        }
-      }
+      this.$router.push('/en/organization')
     },
 
     /* Drop Zone */
