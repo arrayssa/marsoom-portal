@@ -11,7 +11,7 @@ export default defineNuxtRouteMiddleware((to, from) => {
   }
 
   // Array of route names to check
-  const authRoutes = ['/en/auth/login', '/auth/signup'];
+  const authRoutes = ['/en/auth/login', 'en/auth/signup'];
 
   // Check if the route name starts with any of the auth routes
   if (token.value && authRoutes.some((route) => to.path.startsWith(route))) {
