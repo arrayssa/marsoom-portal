@@ -2,6 +2,7 @@ export default defineNuxtConfig({
   typescript: false,
   devtools: { enabled: true },
   ssr: false,
+
   app: {
     head: {
       title: 'Ems Portal',
@@ -15,13 +16,17 @@ export default defineNuxtConfig({
       ]
     }
   },
+
   modules: ['@nuxtjs/tailwindcss', 'nuxt-primevue', '@nuxtjs/i18n', '@pinia/nuxt', '@vee-validate/nuxt'],
+
   runtimeConfig: {
     public: {
       apiBaseUrl: process.env.API_BASE_URL
     }
   },
+
   plugins: ['~/plugins/vueGoogleMaps.js', '~/plugins/date.js','~/plugins/axios.js','~/plugins/vue-phone-number-input.js','~/plugins/vue-tel-input.js'],
+
   i18n: {
     locales: [
       { code: 'en', iso: 'en', name: 'English', alpha2: 'en', dir: 'ltr', lang: 'en', file: 'en.json' },
@@ -38,25 +43,32 @@ export default defineNuxtConfig({
     },
     vueI18n: './lang/i18n.config.js'
   },
+
   routeRules: {
     '/': { redirect: '/en' }
   },
+
   primevue: {
     options: { ripple: true },
     components: {
       exclude: ['Editor']
     }
   },
+
   css: ['primeicons/primeicons.css', 'primeflex/primeflex.scss', 'primevue/resources/primevue.min.css', '@/assets/styles.scss'],
+
   postcss: {
     plugins: {
       tailwindcss: {},
       autoprefixer: {},
     },
   },
+
   vite: {
     optimizeDeps: {
       include: ['@fawmi/vue-google-maps', 'fast-deep-equal']
     }
-  }
+  },
+
+  compatibilityDate: '2024-10-17'
 });
