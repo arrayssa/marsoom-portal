@@ -38,7 +38,28 @@
       <Column field="author" :header='$t("Writer name")'></Column>
       <Column field="issue_date" :header='$t("issue_date")'></Column>
       <Column field="book_language" :header='$t("Language")'></Column>
-      <Column field="status_name" :header='$t("Status")'></Column>
+      <Column field="quantity" :header='$t("Quantity")'></Column>
+      <Column field="price" :header='$t("Price")'></Column>
+      <Column field="barcode" :header='$t("Barcode")'></Column>
+      <Column :header='$t("Is Complete")'>
+        <template #body="slotProps">
+          <span
+            :class="{
+              'bg-green-500 text-white px-2 py-1 rounded': isComplete(slotProps.data),
+              'bg-red-500 text-white px-2 py-1 rounded': !isComplete(slotProps.data),
+            }"
+          >
+            {{ isComplete(slotProps.data) ? 'Yes' : 'No' }}
+          </span>
+        </template>
+      </Column>
+      <Column field="actions" :header="$t('action')">
+        <template #body="slotProps">
+          <div class="flex justify-center">
+            <Button type="button" text icon="pi pi-pencil" @click="openEditModal(slotProps.data)" label="Complete Data" />
+          </div>
+        </template>
+      </Column>
     </DataTable>
   </div>
   <div v-if="showModal2" class="modal">
@@ -52,7 +73,7 @@
     </div>
   </div>
   <div v-if="showEditModal" class="modal">
-    <div class="modal-content">
+    <div class="modal-content h-3/4 overflow-hidden">
       <!-- Modal Header -->
       <div class="flex justify-between items-center px-4 py-2 border-b border-gray-200">
         <h3 class="text-lg font-semibold">Edit Book</h3>
@@ -60,7 +81,7 @@
       </div>
       
       <!-- Modal Body -->
-      <div class="p-4">
+      <div class="modal-body h-4/5 overflow-auto p-4">
         <div class="mb-4">
           <label for="quantity" class="block text-sm font-medium text-gray-700">Quantity:</label>
           <input 
@@ -90,6 +111,35 @@
             class="mt-1 w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
           />
         </div>
+        
+        <div class="b-4 text-start ">
+          <div class="mb-4" v-for="(pnumber, index) in editBook.packages" :key="index">
+            <label :for="'package-' + index" class="block text-sm font-medium text-gray-700">Package Number {{ index + 1 }}:</label>
+            <input 
+              type="text" 
+              v-model="pnumber.number" 
+              :id="'package-' + index" 
+              class="mt-1 w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+            />
+            <!-- Remove button for package numbers, except the first one -->
+            <button 
+              v-if="index > 0"
+              class="mt-2 text-red-500 hover:text-red-700"
+              @click="removeInput(index)"
+            >
+              Remove
+            </button>
+          </div>
+          <div class="px-4 py-3 border-t border-gray-200 flex justify-center space-x-2">
+            <button 
+              class="px-4 py-2 bg-green-500 text-white text-sm font-medium rounded-md hover:bg-gray-600"
+              @click="addNewInput"
+            >
+              <i class="pi pi-plus"></i>
+              Add
+            </button>
+          </div>
+        </div>
       </div>
       
       <!-- Modal Footer -->
@@ -113,6 +163,7 @@
 
 <script setup>
 // const addEditInterest = defineAsyncComponent(() => import('./add-edit-book.vue'));
+import Form from './add-edit-book.vue'
 import { useGetApi } from '../../composables/useApi';
 import { useOrganizationStore } from '../../store/auth';
 import { onMounted, ref } from 'vue';
@@ -135,7 +186,20 @@ let showModal2 = ref(false);
 let showUpload = ref(false);
 let bookFile = ref(null);
 let fileError = ref('');
-let editBook = ref(null);
+const editBook = ref({
+  quantity: 0,
+  price: 0,
+  barcode: '',
+  packages: [{ number: '' }] // Start with one empty package number
+});
+
+const addNewInput = () => {
+  editBook.value.packages.push({ number: '' });
+};
+
+const removeInput = (index) => {
+  editBook.value.packages.splice(index, 1);
+};
 
 const handlePageChange = (event) => {
   currentPage.value = event.page + 1;
@@ -150,47 +214,15 @@ onMounted(() => {
   
 })
 
-const actionsMenu = computed(() => [
-  {
-    type: 'edit',
-    label: t('edit'),
-    icon: 'pi pi-pencil',
-    command: () => {
-      visible.value = true;
-    }
-  },
-  {
-    type: 'approve',
-    label: t('Approve'),
-    icon: 'pi pi-check',
-    command: () => {
-      approve();
-    }
-  },
-  {
-    type: 'reject',
-    label: t('Reject'),
-    icon: 'pi pi-times',
-    command: () => {
-      reject();
-    }
-  },
-
-  {
-    type: 'delete',
-    label: t('delete'),
-    icon: 'pi pi-trash',
-    command: () => {
-      deleteConfirm();
-    }
-  }
-]);
-
 const toggleUpload = () => {
   showUpload.value = !showUpload.value
   bookFile.value = null
   fileError.value = ''
 };
+
+const isComplete = (item) => {
+  return item.price && item.quantity && item.barcode;
+}
 
 const submitBookFile = () => {
   const { $axios } = useNuxtApp();
@@ -237,7 +269,10 @@ const submitBookFile = () => {
 }
 
 const openEditModal = (book) => {
-  editBook.value = book;
+  editBook.value = {
+    ...book,
+    packages: Array.isArray(book.packages) && book.packages.length > 0 ? book.packages : [{ number: '' }]
+  };
   showEditModal.value = true
 }
 

@@ -22,6 +22,17 @@
             :rules="'required'" />
         </div>
       </div>
+      
+      <div class="flex justify-center">
+        <Button type="button" :loading="submiting" class="bg-primary w-9/12 h-54 font-normal text-xl mt-4"
+          :label="$t('common.add')" />
+      </div>
+      <div class="flex justify-between mb-8 gap-9" v-for="(package_number, index) in packages" :key="index">
+        <div class="flex flex-col basis-2/4">
+          <CustomeTextInput v-model="package_number.number" :name="'package_number'" :label="$t('Package Number')" :errors="errors"
+            :rules="'required'" />
+        </div>
+      </div>
 
       <div class="flex justify-center">
         <Button type="submit" :loading="submiting" class="bg-primary w-9/12 h-54 font-normal text-xl mt-4"
@@ -52,7 +63,7 @@ const props = defineProps({
 });
 
 let bookForm = ref({});
-
+let packages = ref([])
 
 const onSubmit = async (value) => {
   submiting.value = true;

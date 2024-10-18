@@ -14,7 +14,7 @@
           <div>
             <InputText id="email1" v-model="user.email" type="email" placeholder="Enter Email" class="w-full mb-5" style="padding: 1rem" />
             <Password id="password1" v-model="user.password" placeholder="Password" :toggleMask="true" class="w-full mb-3" inputClass="w-full" :inputStyle="{ padding: '1rem' }" :feedback="false"></Password>
-            <Button label="Sign In" class="w-full p-3 text-xl mt-5" @click="login"></Button>
+            <Button label="Sign In" class="bg-primary text-base h-42 px-3 w-full p-3 mt-5" @click="login"></Button>
             <div class="flex align-items-center justify-content-between mt-4 gap-5">
               <div class="flex align-items-center">
                 <Checkbox id="rememberme1" v-model="checked" binary class="mr-2"></Checkbox>

@@ -21,6 +21,7 @@ const model = computed(() => {
         // { label: 'Dashboard', to: '/' },
         { label: t('Org Information'), to: `/${storedLang.value}/organization` },
         { label: t('Books'), to: `/${storedLang.value}/books`},
+        { label: t('Complete Data'), to: `/${storedLang.value}/completeData`},
       ]
     }
   ];

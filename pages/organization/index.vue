@@ -9,7 +9,7 @@
           <NuxtLink v-if="organization === null" :to="'organization/new'">
             <Button :label="$t('addNew')" icon="pi pi-plus" class="bg-primary text-base h-42 px-3"/>
           </NuxtLink>
-          <NuxtLink v-else :to="'organization/edit'">
+          <NuxtLink v-else-if="organization !== null && organization.status === 'Approved'" :to="'organization/edit'">
             <Button :label="$t('edit')" icon="pi pi-pencil" class="bg-primary text-base h-42 px-3"/>
           </NuxtLink>
         </div>
@@ -21,13 +21,13 @@
         <p>You must add an organization first!</p>
       </div>
       <div v-else class="mx-auto p-4 bg-white shadow-md rounded-lg">
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <div v-for="(value, key) in organization" :key="key" class="p-4 border rounded-lg bg-gray-50">
-            <strong>{{ formatKey(key) }}:</strong>
-            <span v-if="isLink(key)" class="text-blue-600 underline">
-              <a :href="value" target="_blank">{{ value }}</a>
-            </span>
-            <span v-else class="text-gray-700">{{ value }}</span>
+        <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+          <div v-for="(value, key) in organization" :key="key" class="min-w-[300px]">
+            <label class=" font-semibold" :for="key">{{ formatKey(key) }}</label>
+            <p v-if="isLink(key)" class="text-gray-700 p-2 border rounded-lg bg-gray-50 underline mt-2">
+              <a :href="`/${value}`" target="_blank">{{ key }} <i class="pi pi-link"></i></a>
+            </p>
+            <p v-else class="text-gray-700 p-2 border rounded-lg bg-gray-50 min-h-10 mt-2">{{ value }}</p>
           </div>
         </div>
       </div>
@@ -62,7 +62,6 @@ const isLink = (key) => ['commercial_registry_file', 'website'].includes(key);
           }
         });
         organization.value = response.data.data.organization; // Assuming the data is inside the `data.organization`
-        console.log(organization.value);
         
       } catch (error) {
         console.error('Error fetching organization data:', error);

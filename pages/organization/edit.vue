@@ -1,7 +1,8 @@
 <template>
   <div class="form-container">
     <div class="steps-container rounded-md border-gray-200">
-      <div v-for="(step, index) in steps" :key="index" :class="{ active: currentStep.id === step.id }" @click="goToStep(step.id)">
+      <div v-for="(step, index) in steps" :key="index" :class="{ active: currentStep.id === step.id }"
+        @click="goToStep(step.id)">
         <span class="number">{{ step.id }}</span>
         <span class="title">{{ step.title }}</span>
         <span class="spacer" v-if="step.id < 3">- -- -- -</span>
@@ -10,24 +11,35 @@
     <div v-if="currentStep.id === 1">
       <form @submit.prevent="goToStep(2)" v-if="currentStep.id === 1">
         <div class="block p-10 mt-5 bg-white rounded-md border-gray-200 border">
+          <p class="text-red-500"><i class="pi pi-ban"></i> Disabled fields cannot be edited!</p>
           <!-- Row 1 -->
           <div class="row">
             <div class="column">
-              <label for="name">Name</label>
-              <input v-model="form.name" id="name" type="text" placeholder="Enter Name" />
+              <label for="name">
+                Name
+              </label>
+              <input v-model="form.name" id="name" type="text" placeholder="Enter Name"
+                :disabled="!allowedFields.includes('name')"
+                :class="!allowedFields.includes('name') ? 'bg-gray-200 cursor-not-allowed' : ''" />
             </div>
             <div class="column">
               <label for="commercialName">Commercial Name</label>
               <input v-model="form.commercialName" id="commercialName" type="text"
-                placeholder="Enter Commercial Name" />
+                placeholder="Enter Commercial Name" 
+                :disabled="!allowedFields.includes('commercialName')"
+                :class="!allowedFields.includes('commercialName') ? 'bg-gray-200 cursor-not-allowed' : ''"/>
             </div>
             <div class="column">
               <label for="commercialId">Commercial ID</label>
-              <input v-model="form.commercialId" id="commercialId" type="text" placeholder="Enter ID" />
+              <input v-model="form.commercialId" id="commercialId" type="text" placeholder="Enter ID"
+                :disabled="!allowedFields.includes('commercialId')"
+                :class="!allowedFields.includes('commercialId') ? 'bg-gray-200 cursor-not-allowed' : ''" />
             </div>
             <div class="column">
               <label for="commercialExpiration">Commercial Expiration</label>
-              <input v-model="form.commercialExpiration" id="commercialExpiration" type="date" />
+              <input v-model="form.commercialExpiration" id="commercialExpiration" type="date"
+                :disabled="!allowedFields.includes('commercial_registry_expiration')"
+                :class="!allowedFields.includes('commercial_registry_expiration') ? 'bg-gray-200 cursor-not-allowed' : ''" />
             </div>
           </div>
 
@@ -35,19 +47,27 @@
           <div class="row">
             <div class="column">
               <label for="email">Email</label>
-              <input v-model="form.email" id="email" type="email" placeholder="Enter Email" />
+              <input v-model="form.email" id="email" type="email" placeholder="Enter Email"
+                :disabled="!allowedFields.includes('email')"
+                :class="!allowedFields.includes('email') ? 'bg-gray-200 cursor-not-allowed' : ''" />
             </div>
             <div class="column">
               <label for="zip">Zip</label>
-              <input v-model="form.zip" id="zip" type="text" placeholder="Enter Zip" />
+              <input v-model="form.zip" id="zip" type="text" placeholder="Enter Zip"
+                :disabled="!allowedFields.includes('zip')"
+                :class="!allowedFields.includes('zip') ? 'bg-gray-200 cursor-not-allowed' : ''" />
             </div>
             <div class="column">
               <label for="phone1">Phone 1</label>
-              <input v-model="form.phone1" id="phone1" type="text" placeholder="Enter Phone Number" />
+              <input v-model="form.phone1" id="phone1" type="text" placeholder="Enter Phone Number" 
+                :disabled="!allowedFields.includes('phone1')"
+                :class="!allowedFields.includes('phone1') ? 'bg-gray-200 cursor-not-allowed' : ''"/>
             </div>
             <div class="column">
               <label for="phone2">Phone 2</label>
-              <input v-model="form.phone2" id="phone2" type="text" placeholder="Enter Phone Number" />
+              <input v-model="form.phone2" id="phone2" type="text" placeholder="Enter Phone Number" 
+                :disabled="!allowedFields.includes('phone2')"
+                :class="!allowedFields.includes('phone2') ? 'bg-gray-200 cursor-not-allowed' : ''"/>
             </div>
           </div>
 
@@ -55,24 +75,32 @@
           <div class="row">
             <div class="column">
               <label for="nationalityId">Nationality ID</label>
-              <select v-model="form.nationalityId" id="nationalityId" @change="fetchCities">
+              <select v-model="form.nationalityId" id="nationalityId" @change="fetchCities"
+                :disabled="!allowedFields.includes('nationalityId')"
+                :class="!allowedFields.includes('nationalityId') ? 'bg-gray-200 cursor-not-allowed' : ''">
                 <option v-for="country in countries" :key="country.id" :value="country.id">{{ country.name }}</option>
               </select>
             </div>
             <div class="column">
               <label for="cityId">City ID</label>
-              <select v-model="form.cityId" id="cityId">
+              <select v-model="form.cityId" id="cityId"
+                :disabled="!allowedFields.includes('cityId')"
+                :class="!allowedFields.includes('cityId') ? 'bg-gray-200 cursor-not-allowed' : ''">
                 <option v-for="city in cities" :key="city.id" :value="city.id">{{ city.name }}</option>
               </select>
             </div>
             <div class="column">
               <label for="publishingLicense">Publishing License</label>
               <input v-model="form.publishingLicense" id="publishingLicense" type="text"
-                placeholder="Enter Publishing License" />
+                placeholder="Enter Publishing License" 
+                :disabled="!allowedFields.includes('publishingLicense')"
+                :class="!allowedFields.includes('publishingLicense') ? 'bg-gray-200 cursor-not-allowed' : ''"/>
             </div>
             <div class="column">
               <label for="publishingLicenseExpiration">Publishing License Expiration</label>
-              <input v-model="form.publishingLicenseExpiration" id="publishingLicenseExpiration" type="date" />
+              <input v-model="form.publishingLicenseExpiration" id="publishingLicenseExpiration" type="date" 
+                :disabled="!allowedFields.includes('publishing_license_expiration')"
+                :class="!allowedFields.includes('publishing_license_expiration') ? 'bg-gray-200 cursor-not-allowed' : ''"/>
             </div>
           </div>
 
@@ -88,35 +116,29 @@
     <div v-if="currentStep.id === 2">
       <form @submit.prevent="goToStep(3)" v-if="currentStep.id === 2">
         <div class="block p-10 mt-5 bg-white rounded-md border-gray-200 border">
-          
+
           <!-- File Uploads -->
           <div class="row">
             <div class="column">
               <label>Upload Company Logo</label>
-              <DropFile
-                field="companyLogo"
-                :fileData="form.companyLogo"
-                @file-changed="handleFileChange"
-                @file-removed="handleFileRemove"
-              />
+              <DropFile field="companyLogo" :fileData="form.companyLogo" @file-changed="handleFileChange"
+                @file-removed="handleFileRemove" 
+                :disabled="!allowedFields.includes('company_logo')"
+                :class="!allowedFields.includes('company_logo') ? 'bg-gray-200 cursor-not-allowed' : ''"/>
             </div>
             <div class="column">
               <label>Commercial File</label>
-              <DropFile
-                field="commercialFile"
-                :fileData="form.commercialFile"
-                @file-changed="handleFileChange"
-                @file-removed="handleFileRemove"
-              />
+              <DropFile field="commercialFile" :fileData="form.commercialFile" @file-changed="handleFileChange"
+                @file-removed="handleFileRemove" 
+                :disabled="!allowedFields.includes('commercial_registry_file')"
+                :class="!allowedFields.includes('commercial_registry_file') ? 'bg-gray-200 cursor-not-allowed' : ''"/>
             </div>
             <div class="column">
               <label>Publishing File</label>
-              <DropFile
-                field="publishingFile"
-                :fileData="form.publishingFile"
-                @file-changed="handleFileChange"
-                @file-removed="handleFileRemove"
-              />
+              <DropFile field="publishingFile" :fileData="form.publishingFile" @file-changed="handleFileChange"
+                @file-removed="handleFileRemove" 
+                :disabled="!allowedFields.includes('publishing_file')"
+                :class="!allowedFields.includes('publishing_file') ? 'bg-gray-200 cursor-not-allowed' : ''"/>
             </div>
           </div>
 
@@ -132,23 +154,31 @@
     <div v-if="currentStep.id === 3">
       <form @submit.prevent="submitForm" v-if="currentStep.id === 3">
         <div class="block p-10 mt-5 bg-white rounded-md border-gray-200 border">
-          
+
           <div class="row">
             <div class="column">
               <label for="iban">IBAN</label>
-              <input v-model="form.iban" id="iban" type="text" placeholder="Enter IBAN" />
+              <input v-model="form.iban" id="iban" type="text" placeholder="Enter IBAN" 
+                :disabled="!allowedFields.includes('iban')"
+                :class="!allowedFields.includes('iban') ? 'bg-gray-200 cursor-not-allowed' : ''"/>
             </div>
             <div class="column">
               <label for="swiftCode">Swift Code</label>
-              <input v-model="form.swiftCode" id="swiftCode" type="text" placeholder="Enter Swift Code" />
+              <input v-model="form.swiftCode" id="swiftCode" type="text" placeholder="Enter Swift Code" 
+                :disabled="!allowedFields.includes('swiftCode')"
+                :class="!allowedFields.includes('swiftCode') ? 'bg-gray-200 cursor-not-allowed' : ''"/>
             </div>
             <div class="column">
               <label for="bank">Bank</label>
-              <input v-model="form.bank" id="bank" type="text" placeholder="Enter Bank" />
+              <input v-model="form.bank" id="bank" type="text" placeholder="Enter Bank" 
+                :disabled="!allowedFields.includes('bank')"
+                :class="!allowedFields.includes('bank') ? 'bg-gray-200 cursor-not-allowed' : ''"/>
             </div>
             <div class="column">
               <label for="bankAccount">Bank Account</label>
-              <input v-model="form.bankAccount" id="bankAccount" type="text" placeholder="Enter Bank Account" />
+              <input v-model="form.bankAccount" id="bankAccount" type="text" placeholder="Enter Bank Account" 
+                :disabled="!allowedFields.includes('bankAccount')"
+                :class="!allowedFields.includes('bankAccount') ? 'bg-gray-200 cursor-not-allowed' : ''"/>
             </div>
           </div>
 
@@ -260,8 +290,13 @@ export default {
       classifications: [],
       searchQuery: '',
       search_id: '',
-
-      suggestions: [],
+      allowedFields: [
+        'commercial_registry_expiration',
+        'company_logo',
+        'commercial_registry_file',
+        'publishing_file',
+        'publishing_license_expiration'
+      ],
       selectedIndex: -1, // To keep track of highlighted suggestion
 
     };
@@ -380,40 +415,46 @@ export default {
 
       // Create FormData to handle both form fields and file uploads
       const formData = new FormData();
-      formData.append('name', this.form.name);
-      formData.append('commercial_Name', this.form.commercialName);
-      formData.append('abbreviation', this.form.abbreviation);
-      formData.append('name_tag', this.form.nameTag);
-      formData.append('commercial_rgistryID', this.form.commercialId);
-      formData.append('commercial_registry_expiration', this.form.commercialExpiration);
-      formData.append('tax_registry_expiration', this.form.taxExpiration);
-      formData.append('email', this.form.email);
-      formData.append('establish_date', this.form.establishDate);
-      formData.append('zip', this.form.zip);
-      formData.append('Phone1', this.form.phone1);
-      formData.append('Phone2', this.form.phone2);
-      formData.append('WhatsApp', this.form.whatsapp);
-      formData.append('head_office_address', this.form.headOfficeAddress);
-      formData.append('website', this.form.websiteUrl);
-      formData.append('city_id', this.form.cityId);
-      formData.append('nationality_country_Id', this.form.nationalityId);
-      formData.append('org_classification_id', this.form.classificationCode);
-      formData.append('iban', this.form.iban);
-      formData.append('swift_code', this.form.swiftCode);
-      formData.append('bank', this.form.bank);
-      formData.append('account_number', this.form.bankAccount);
-      formData.append('membership_number', this.form.membershipNumber);
-      formData.append('publishing_license_number', this.form.publishingLicense);
-      formData.append('publishing_license_expiration', this.form.publishingLicenseExpiration);
+      const appendIfAllowed = (fieldName, value) => {
+        if (this.allowedFields.includes(fieldName) && value) {
+          formData.append(fieldName, value);
+        }
+      };
+
+      appendIfAllowed('name', this.form.name);
+      appendIfAllowed('commercial_Name', this.form.commercialName);
+      appendIfAllowed('abbreviation', this.form.abbreviation);
+      appendIfAllowed('name_tag', this.form.nameTag);
+      appendIfAllowed('commercial_rgistryID', this.form.commercialId);
+      appendIfAllowed('commercial_registry_expiration', this.form.commercialExpiration);
+      appendIfAllowed('tax_registry_expiration', this.form.taxExpiration);
+      appendIfAllowed('email', this.form.email);
+      appendIfAllowed('establish_date', this.form.establishDate);
+      appendIfAllowed('zip', this.form.zip);
+      appendIfAllowed('Phone1', this.form.phone1);
+      appendIfAllowed('Phone2', this.form.phone2);
+      appendIfAllowed('WhatsApp', this.form.whatsapp);
+      appendIfAllowed('head_office_address', this.form.headOfficeAddress);
+      appendIfAllowed('website', this.form.websiteUrl);
+      appendIfAllowed('city_id', this.form.cityId);
+      appendIfAllowed('nationality_country_Id', this.form.nationalityId);
+      appendIfAllowed('org_classification_id', this.form.classificationCode);
+      appendIfAllowed('iban', this.form.iban);
+      appendIfAllowed('swift_code', this.form.swiftCode);
+      appendIfAllowed('bank', this.form.bank);
+      appendIfAllowed('account_number', this.form.bankAccount);
+      appendIfAllowed('membership_number', this.form.membershipNumber);
+      appendIfAllowed('publishing_license_number', this.form.publishingLicense);
+      appendIfAllowed('publishing_license_expiration', this.form.publishingLicenseExpiration);
 
       // Add files (if available)
-      if (this.form.companyLogo) {
+      if (this.form.companyLogo && this.allowedFields.includes('company_logo')) {
         formData.append('company_logo', this.form.companyLogo);
       }
-      if (this.form.commercialFile) {
+      if (this.form.commercialFile && this.allowedFields.includes('commercial_registry_file')) {
         formData.append('commercial_registry_file', this.form.commercialFile);
       }
-      if (this.form.publishingFile) {
+      if (this.form.publishingFile && this.allowedFields.includes('publishing_file')) {
         formData.append('publishing_file', this.form.publishingFile);
       }
 
@@ -424,7 +465,7 @@ export default {
 
       try {
         // Send form data with authorization token
-        const response = await $axios.post('organizations/'+this.org.id, formData, {
+        const response = await $axios.post('organizations/' + this.org.id, formData, {
           headers: {
             'Authorization': `Bearer ${token}`,
             'Content-Type': 'multipart/form-data'
@@ -464,8 +505,6 @@ export default {
 </script>
 
 <style scoped>
-
-
 .modal {
   display: flex;
   justify-content: center;
@@ -912,6 +951,4 @@ input[type="file"] {
   border: 1px solid #EDEDED;
   border-radius: 10px;
 }
-
-
 </style>
