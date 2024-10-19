@@ -4,13 +4,13 @@
         <p class="font-medium text-blue10 text-xl capitalize">{{ $t('organization') }}</p>
         <div class="flex gap-5">
           <NuxtLink v-if="organization !== null && organization.status === 'Approved'" :to="'books'">
-            <Button :label="$t('uploadBooks')" icon="pi pi-book" class="bg-primary text-base h-42 px-3"/>
+            <Button :label="$t('uploadBooks')" icon="pi pi-book" class="bg-primary text-base h-42 px-3 text-white"/>
           </NuxtLink>
           <NuxtLink v-if="organization === null" :to="'organization/new'">
-            <Button :label="$t('addNew')" icon="pi pi-plus" class="bg-primary text-base h-42 px-3"/>
+            <Button :label="$t('addNew')" icon="pi pi-plus" class="bg-primary text-base h-42 px-3 text-white"/>
           </NuxtLink>
           <NuxtLink v-else-if="organization !== null && organization.status === 'Approved'" :to="'organization/edit'">
-            <Button :label="$t('edit')" icon="pi pi-pencil" class="bg-primary text-base h-42 px-3"/>
+            <Button :label="$t('edit')" icon="pi pi-pencil" class="bg-primary text-base h-42 px-3 text-white"/>
           </NuxtLink>
         </div>
       </div>
@@ -21,7 +21,7 @@
         <p>You must add an organization first!</p>
       </div>
       <div v-else class="mx-auto p-4 bg-white shadow-md rounded-lg">
-        <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           <div v-for="(value, key) in organization" :key="key" class="min-w-[300px]">
             <label class=" font-semibold" :for="key">{{ formatKey(key) }}</label>
             <p v-if="isLink(key)" class="text-gray-700 p-2 border rounded-lg bg-gray-50 underline mt-2">

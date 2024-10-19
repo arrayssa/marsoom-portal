@@ -2,7 +2,7 @@
   <div class="">
     <div class="flex justify-between items-center mb-10">
       <p class="font-medium text-blue10 text-xl capitalize">{{ $t('books') }}</p>
-      <Button v-if="orgStore.organization !== null && orgStore.organization.status === 'Approved' && !showUpload" :label="$t('uploadBooks')" icon="pi pi-upload" class="bg-primary text-base h-42 px-3" @click="toggleUpload"/>
+      <Button v-if="orgStore.organization !== null && orgStore.organization.status === 'Approved' && !showUpload" :label="$t('uploadBooks')" icon="pi pi-upload" class="bg-primary text-base h-42 px-3 text-white" @click="toggleUpload"/>
       <a v-else-if="orgStore.organization !== null && orgStore.organization.status === 'Approved' && showUpload"
         href="/assets/demo.xlsx"
         download
@@ -27,8 +27,8 @@
         </div>
         <div v-if="fileError" class="text-red-500">{{ fileError }}</div>
         <div class="flex justify-center mt-5">
-          <Button v-if="orgStore.organization !== null && orgStore.organization.status === 'Approved' && showUpload" :label="$t('cancel')" icon="pi pi-times" class=" bg-slate-100 text-base h-42 px-3" @click="toggleUpload"/>
-          <Button v-if="orgStore.organization !== null && orgStore.organization.status === 'Approved' && showUpload" :label="$t('uploadBooks')" icon="pi pi-upload" class="bg-primary text-base h-42 px-3 mx-5" @click="submitBookFile"/>
+          <Button v-if="orgStore.organization !== null && orgStore.organization.status === 'Approved' && showUpload" :label="$t('cancel')" icon="pi pi-times" class=" bg-slate-100 text-base h-42 px-3 " @click="toggleUpload"/>
+          <Button v-if="orgStore.organization !== null && orgStore.organization.status === 'Approved' && showUpload" :label="$t('uploadBooks')" icon="pi pi-upload" class="bg-primary text-base h-42 px-3 mx-5 text-white" @click="submitBookFile"/>
         </div>
       </div>
     </div>

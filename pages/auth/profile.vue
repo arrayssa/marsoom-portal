@@ -1,7 +1,7 @@
 <template>
   <div v-if="profile">
     <h4>Personal Information</h4>
-    <div class="rounded" v-if="profile.user">
+    <div class="rounded-profile" v-if="profile.user">
       <div class="user">
         <div>
           <img :src="profile.user.personal_image || 'default-profile-image-url'" alt="Profile Image" />
@@ -172,7 +172,7 @@ export default {
 };
 </script>
 <style>
-.rounded {
+.rounded-profile {
   display: flex;
   padding: 0 60px;
   border-radius: 12px;
