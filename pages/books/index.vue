@@ -141,7 +141,7 @@ const handlePageChange = (event) => {
   currentPage.value = event.page + 1;
 };
 
-const { pending, data, refresh } = useGetApi(`get_books_by_organization/${orgStore.organization?.id}`, {
+const { pending, data, refresh } = useGetApi(`get_books_by_organization/${orgStore.organization?.id}?status=0`, {
   limit: perPage,
   page: currentPage
 });
