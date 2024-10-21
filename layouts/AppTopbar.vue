@@ -1,7 +1,5 @@
 <template>
-  <div class="layout-topbar" v-if="isAuthenticated">
-
-
+  <div class="layout-topbar px-4" v-if="isAuthenticated">
     <button class="p-link layout-topbar-menu-button layout-topbar-button" @click="onTopBarMenuButton()">
       <i class="pi pi-ellipsis-v"></i>
     </button>

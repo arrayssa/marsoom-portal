@@ -12,39 +12,66 @@
         </div>
       </div>
     </div>
-    <div class="cards-information" v-if="profile.user">
-      <div class="user-information">
-        <div class="content-title">
-          <span>First name</span>
-          <span>Last name</span>
-          <span>Family</span>
-          <span>Email Address:</span>
-          <span>Phone:</span>
-          <span>Confirm identity:</span>
-        </div>
-        <div class="content-result">
-          <span>{{ profile.user.first_name }}</span>
-          <span>{{ profile.user.last_name }}</span>
-          <span>{{ profile.user.family_name }}</span>
-          <span>{{ profile.user.email }}</span>
-          <span>{{ profile.user.phone }}</span>
-          <span>{{ profile.user.confirm_identity }}</span>
+    <div class="" v-if="profile.user">
+      <div class="space-y-4">
+        <div class="flex flex-col md:flex-row space-y-2 md:space-y-0 md:space-x-8">
+          <div class="w-full md:w-1/2 bg-white p-4 border rounded-xl">
+            <h3 class="text-lg font-semibold">Personal Information</h3>
+            <div class="mt-2">
+              <div class="flex justify-between py-2">
+                <span class="font-medium">First name:</span>
+                <span>{{ profile.user.first_name }}</span>
+              </div>
+              <div class="flex justify-between py-2">
+                <span class="font-medium">Last name:</span>
+                <span>{{ profile.user.last_name }}</span>
+              </div>
+              <div class="flex justify-between py-2">
+                <span class="font-medium">Family:</span>
+                <span>{{ profile.user.family_name }}</span>
+              </div>
+              <div class="flex justify-between py-2">
+                <span class="font-medium">Email Address:</span>
+                <span>{{ profile.user.email }}</span>
+              </div>
+              <div class="flex justify-between py-2">
+                <span class="font-medium">Phone:</span>
+                <span>{{ profile.user.phone }}</span>
+              </div>
+              <div class="flex justify-between py-2">
+                <span class="font-medium">Confirm identity:</span>
+                <span>{{ profile.user.confirm_identity }}</span>
+              </div>
+            </div>
+          </div>
+          <div class="w-full md:w-1/2 bg-white p-4 border rounded-xl">
+            <h3 class="text-lg font-semibold">Address Information</h3>
+            <div class="mt-2">
+              <div class="flex justify-between py-2">
+                <span class="font-medium">City:</span>
+                <span>{{ profile.user.city.name }}</span>
+              </div>
+              <div class="flex justify-between py-2">
+                <span class="font-medium">Street:</span>
+                <span>{{ profile.user.street_address }}</span>
+              </div>
+              <div class="flex justify-between py-2">
+                <span class="font-medium">Birth date:</span>
+                <span>{{ profile.user.date_of_birth }}</span>
+              </div>
+              <div class="flex justify-between py-2 items-center">
+                <span class="font-medium">ID photo:</span>
+                <img
+                  :src="profile.user.doc_image || '/path/to/default-id-image.png'"
+                  alt="ID Image"
+                  class="w-24 h-24 object-cover rounded-lg ml-4"
+                />
+              </div>
+            </div>
+          </div>
         </div>
       </div>
-      <div class="user-address-information">
-        <div class="content-title">
-          <span>City:</span>
-          <span>Street:</span>
-          <span>Birth date:</span>
-          <span>ID photo:</span>
-        </div>
-        <div class="content-result">
-          <span>{{ profile.user.city.name }}</span>
-          <span>{{ profile.user.street_address }}</span>
-          <span>{{ profile.user.date_of_birth }}</span>
-          <img :src="profile.user.doc_image || '/path/to/default-id-image.png'" alt="ID Image" style="width: 100%; height: 150px; object-fit: cover; border-radius: 4px" />
-        </div>
-      </div>
+
         <div class="user-address-information" v-if="profile.user.role=='employee'">
             <div class="notifications-section" v-if="notifications.length">
                 <h4>Organization Requests</h4>
