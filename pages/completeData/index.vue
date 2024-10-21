@@ -2,7 +2,7 @@
   <div class="">
     <div class="flex justify-between items-center mb-10">
       <p class="font-medium text-blue10 text-xl capitalize">{{ $t('books') }}</p>
-      <Button v-if="orgStore.organization !== null && orgStore.organization.status === 'Approved' && !showUpload" :label="$t('uploadBooks')" icon="pi pi-upload" class="bg-primary text-base h-42 px-3" @click="toggleUpload"/>
+      <Button v-if="orgStore.organization !== null && orgStore.organization.status === 'Approved' && !showUpload" :label="$t('uploadBooks')" icon="pi pi-upload" class="bg-primary text-base h-42 px-3 text-white" @click="toggleUpload"/>
       <a v-else-if="orgStore.organization !== null && orgStore.organization.status === 'Approved' && showUpload"
         href="/assets/demo.xlsx"
         download
@@ -28,7 +28,7 @@
         <div v-if="fileError" class="text-red-500">{{ fileError }}</div>
         <div class="flex justify-center mt-5">
           <Button v-if="orgStore.organization !== null && orgStore.organization.status === 'Approved' && showUpload" :label="$t('cancel')" icon="pi pi-times" class=" bg-slate-100 text-base h-42 px-3" @click="toggleUpload"/>
-          <Button v-if="orgStore.organization !== null && orgStore.organization.status === 'Approved' && showUpload" :label="$t('uploadBooks')" icon="pi pi-upload" class="bg-primary text-base h-42 px-3 mx-5" @click="submitBookFile"/>
+          <Button v-if="orgStore.organization !== null && orgStore.organization.status === 'Approved' && showUpload" :label="$t('uploadBooks')" icon="pi pi-upload" class="bg-primary text-base h-42 px-3 mx-5 text-white" @click="submitBookFile"/>
         </div>
       </div>
     </div>
@@ -56,7 +56,7 @@
       <Column field="actions" :header="$t('action')">
         <template #body="slotProps">
           <div class="flex justify-center">
-            <Button type="button" text icon="pi pi-pencil" @click="openEditModal(slotProps.data)" label="Complete Data" />
+            <Button type="button" text :icon="isComplete(slotProps.data) ? 'pi pi-pencil' : 'pi pi-check'" @click="openEditModal(slotProps.data)" :label="isComplete(slotProps.data) ? 'Edit' : 'Complete Data'" />
           </div>
         </template>
       </Column>
@@ -76,14 +76,14 @@
     <div class="modal-content h-3/4 overflow-hidden">
       <!-- Modal Header -->
       <div class="flex justify-between items-center px-4 py-2 border-b border-gray-200">
-        <h3 class="text-lg font-semibold">Edit Book</h3>
+        <h3 class="text-lg font-semibold">{{ isComplete(editBook) ? 'Edit book' : 'Complete data' }}</h3>
         <button class="text-gray-500 hover:text-gray-700" @click="closeEditModal">&times;</button>
       </div>
       
       <!-- Modal Body -->
       <div class="modal-body h-4/5 overflow-auto p-4">
         <div class="mb-4">
-          <label for="quantity" class="block text-sm font-medium text-gray-700">Quantity:</label>
+          <label for="quantity" class="block text-sm font-medium text-gray-700">Total Quantity:</label>
           <input 
             type="number" 
             v-model="editBook.quantity" 
@@ -113,14 +113,28 @@
         </div>
         
         <div class="b-4 text-start ">
-          <div class="mb-4" v-for="(pnumber, index) in editBook.packages" :key="index">
-            <label :for="'package-' + index" class="block text-sm font-medium text-gray-700">Package Number {{ index + 1 }}:</label>
-            <input 
-              type="text" 
-              v-model="pnumber.number" 
-              :id="'package-' + index" 
-              class="mt-1 w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-            />
+          <div class="mb-4 border-t py-2" v-for="(pnumber, index) in editBook.packages" :key="index">
+            <label :for="'package-' + index" class="block text-sm font-bold underline text-gray-700">Package {{ index + 1 }}:</label>
+            <div class="flex justify-between">
+              <div class="block w-5/12">
+                <label :for="'package-' + index" class="block text-sm font-medium text-gray-700">Number</label>
+                <input 
+                  type="text" 
+                  v-model="pnumber.number" 
+                  :id="'package-' + index" 
+                  class="mt-1 w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                />
+              </div>
+              <div class="block w-5/12">
+                <label :for="'quantity-' + index" class="block text-sm font-medium text-gray-700">Quantity</label>
+                <input 
+                  type="text" 
+                  v-model="pnumber.quantity" 
+                  :id="'quantity-' + index" 
+                  class="mt-1 w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                />
+              </div>
+            </div>
             <!-- Remove button for package numbers, except the first one -->
             <button 
               v-if="index > 0"
@@ -162,8 +176,6 @@
 </template>
 
 <script setup>
-// const addEditInterest = defineAsyncComponent(() => import('./add-edit-book.vue'));
-import Form from './add-edit-book.vue'
 import { useGetApi } from '../../composables/useApi';
 import { useOrganizationStore } from '../../store/auth';
 import { onMounted, ref } from 'vue';
@@ -190,11 +202,11 @@ const editBook = ref({
   quantity: 0,
   price: 0,
   barcode: '',
-  packages: [{ number: '' }] // Start with one empty package number
+  packages: [{ number: '', quantity: 1 }] // Start with one empty package number
 });
 
 const addNewInput = () => {
-  editBook.value.packages.push({ number: '' });
+  editBook.value.packages.push({ number: '', quantity: 1 });
 };
 
 const removeInput = (index) => {
@@ -271,7 +283,7 @@ const submitBookFile = () => {
 const openEditModal = (book) => {
   editBook.value = {
     ...book,
-    packages: Array.isArray(book.packages) && book.packages.length > 0 ? book.packages : [{ number: '' }]
+    packages: Array.isArray(book.packages) && book.packages.length > 0 ? book.packages : [{ number: '', quantity: 1 }]
   };
   showEditModal.value = true
 }

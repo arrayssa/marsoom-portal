@@ -122,23 +122,17 @@
             <div class="column">
               <label>Upload Company Logo</label>
               <DropFile field="companyLogo" :fileData="form.companyLogo" @file-changed="handleFileChange"
-                @file-removed="handleFileRemove" 
-                :disabled="!allowedFields.includes('company_logo')"
-                :class="!allowedFields.includes('company_logo') ? 'bg-gray-200 cursor-not-allowed' : ''"/>
+                @file-removed="handleFileRemove"/>
             </div>
             <div class="column">
               <label>Commercial File</label>
               <DropFile field="commercialFile" :fileData="form.commercialFile" @file-changed="handleFileChange"
-                @file-removed="handleFileRemove" 
-                :disabled="!allowedFields.includes('commercial_registry_file')"
-                :class="!allowedFields.includes('commercial_registry_file') ? 'bg-gray-200 cursor-not-allowed' : ''"/>
+                @file-removed="handleFileRemove"/>
             </div>
             <div class="column">
               <label>Publishing File</label>
               <DropFile field="publishingFile" :fileData="form.publishingFile" @file-changed="handleFileChange"
-                @file-removed="handleFileRemove" 
-                :disabled="!allowedFields.includes('publishing_file')"
-                :class="!allowedFields.includes('publishing_file') ? 'bg-gray-200 cursor-not-allowed' : ''"/>
+                @file-removed="handleFileRemove" />
             </div>
           </div>
 
@@ -582,7 +576,6 @@ select {
   margin-bottom: 10px;
   border: 1px solid #ececec;
   border-radius: 4px;
-  background-color: #f4f4f4;
 }
 
 button {

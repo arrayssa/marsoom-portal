@@ -109,6 +109,7 @@ const isLink = (key) => ['commercial_registry_file', 'website'].includes(key);
         
       } catch (error) {
         console.error('Error fetching organization data:', error);
+        organization.value = null
       }
     }
   </script>

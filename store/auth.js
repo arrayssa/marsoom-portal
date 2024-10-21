@@ -77,7 +77,6 @@ export const useSignupStore = defineStore('signup', {
       formData.append('district', this.district);
       formData.append('street', this.street);
 
-      console.log(formData.getAll('street'));
       if (this.personal_image) {
         formData.append('personal_image', this.personal_image);
       }
@@ -86,9 +85,9 @@ export const useSignupStore = defineStore('signup', {
         formData.append('doc_image', this.doc_image);
       }
 
-      for (let [key, value] of formData.entries()) {
-        console.log(key, value);
-      }
+      // for (let [key, value] of formData.entries()) {
+      //   console.log(key, value);
+      // }
 
       try {
         const config = {
@@ -105,6 +104,7 @@ export const useSignupStore = defineStore('signup', {
 
         return response.data.data;
       } catch (error) {
+        throw new Error('Failed to sign up');
         console.error(error);
       }
     }
@@ -127,6 +127,7 @@ export const useProfileStore = defineStore('profile', {
           });
           const response = await api.get('profile');
           this.user = response.data.data.user;
+          
         //  alert( this.user.city.name)
       } catch (error) {
         console.error('Failed to fetch profile:', error);

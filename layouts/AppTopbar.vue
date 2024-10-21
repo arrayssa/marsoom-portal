@@ -6,12 +6,13 @@
       <i class="pi pi-ellipsis-v"></i>
     </button>
 
-    <IconField iconPosition="right" class="m-auto">
+    <span></span>
+    <!-- <IconField iconPosition="right" class="m-auto">
       <InputIcon>
         <i class="pi pi-search" />
       </InputIcon>
       <InputText :placeholder="$t('search')" class="h-3rem border-round-xl border-1 bg-white" />
-    </IconField>
+    </IconField> -->
 
     <div class="layout-topbar-menu gap-5" :class="topbarMenuClasses">
       <div class="flex align-items-center gap-2">
@@ -48,7 +49,6 @@
               <span class="text-black-alpha-90 text-sm" :class="$i18n.locale === 'ar' ? 'ml-4' : 'mr-4'">Aman</span>
               <img src="/layout/images/arrow-down.png" alt="vector" />
             </div>
-            <span class="text-gray-400 text-xs mt-1">owner</span>
           </div>
         </Button>
         <Menu ref="menu" id="overlay_menu" :model="items" :popup="true" />

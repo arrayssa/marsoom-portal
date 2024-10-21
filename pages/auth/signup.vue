@@ -2,8 +2,7 @@
   <div class="sign-up-form">
     <h2>Sign Up</h2>
     <p>Let's create a new account</p>
-
-    <form @submit.prevent="handleSignup">
+    <form @submit.prevent="handleSignup" class="loading">
       <div class="form-row">
         <input type="text" v-model="first_name" placeholder="First name" @input="(event) => onInputChange('first_name', event)" />
         <input type="text" v-model="last_name" placeholder="Last name" @input="(event) => onInputChange('last_name', event)" />
@@ -11,25 +10,25 @@
       </div>
 
       <div class="form-row">
-        <input type="tel" v-model="phone" placeholder="+966 Phone" @input="(event) => onInputChange('phone', event)" />
+        <vue-tel-input v-model="phoneNumber" mode="international" @input="onPhoneChange" @country-changed="onCountryChanged" class=" w-1/3"></vue-tel-input>
+        <!-- <input type="tel" v-model="phone" placeholder="+966 Phone" @input="(event) => onInputChange('phone', event)" /> -->
         <input type="email" v-model="email" placeholder="Email" @input="(event) => onInputChange('email', event)" />
         <input type="text" v-model="confirm_identity" placeholder="Confirm identity" @input="(event) => onInputChange('confirm_identity', event)" />
       </div>
-
+      
       <div class="form-row">
         <input type="date" v-model="identity_expiration_date" placeholder="Identity expiration date" @input="(event) => onInputChange('identity_expiration_date', event)" />
       </div>
 
       <div class="form-row">
-        <label>
-          Upload an image of the document
-          <input type="file" @change="onFileChange('doc_image', $event)" />
-        </label>
-
-        <label>
-          Upload a personal photo
-          <input type="file" @change="onFileChange('personal_image', $event)" />
-        </label>
+        <div class="column w-1/2">
+          <label>Upload an image of the document</label>
+          <DropFile field="doc_image" :fileData="doc_image" @file-changed="onFileChange('doc_image', $event)" @file-removed="handleFileRemove"/>
+        </div>
+        <div class="column w-1/2">
+          <label>Upload a personal photo</label>
+          <DropFile field="personal_image" :fileData="personal_image" @file-changed="onFileChange('personal_image', $event)" @file-removed="handleFileRemove"/>
+        </div>
       </div>
 
       <div class="form-row">
@@ -49,19 +48,27 @@
         <input type="date" v-model="date_of_birth" placeholder="Birth date" @input="(event) => onInputChange('date_of_birth', event)" />
       </div>
 
-      <button type="submit">Sign up</button>
+      <ProgressSpinner v-if="loading" />
+      <div class="w-full text-center">
+        <button type="submit" class="bg-primary text-base px-3 w-1/3  p-3 mt-5 text-white rounded-md">Sign up</button>
+      </div>
     </form>
 
-    <p>Already have an account?  <router-link :to="`/` + $i18n.locale + `/auth/login`">Sign in!</router-link></p>
+    <p class="mt-4">Already have an account?  <router-link class="font-bold text-primary underline" :to="`/` + $i18n.locale + `/auth/login`">Sign in!</router-link></p>
   </div>
 </template>
 
 <script>
+import { VueTelInput } from 'vue-tel-input'
 import { useSignupStore } from '../../store/auth';
 import { useRouter } from 'vue-router'; // Import useRouter
 import { useRuntimeConfig } from '#imports';
+import DropFile from '../../components/DropFile.vue';
 
 export default {
+  components: {
+    VueTelInput,
+  },
   setup() {
     definePageMeta({
       layout: 'login'
@@ -70,6 +77,11 @@ export default {
     const cities = ref([]);
     const router = useRouter();
     const { locale } = useI18n();
+    let phoneNumber = ref(null);
+    let countryCode = ref(null);
+    let doc_image = ref(null);
+    let personal_image = ref(null);
+    let loading = ref(false);
 
     // Fetch cities from API when the component is mounted
     onMounted(async () => {
@@ -82,31 +94,61 @@ export default {
       }
     });
 
-    const onFileChange = (field, event) => {
-      const file = event.target.files[0];
-      console.log(file);
+    const onPhoneChange = (number) => {
+      phoneNumber.value = number.target.value
+      signupStore['phone'] = phoneNumber.value
+    }
+    
+    const onCountryChanged = (country) => {
+      countryCode.value = country.dialCode;
+    }
+
+    const onFileChange = (field, file) => {
+      // const file = event.target.files[0];
       signupStore[field] = file;
+      if (field == 'doc_image') {
+        doc_image.value = file
+      } else if (field == 'personal_image') {
+        personal_image.value = file
+      }
     };
+    const handleFileRemove = (field) => {
+      signupStore[field] = null;
+      if (field == 'doc_image') {
+        doc_image.value = null
+      } else if (field == 'personal_image') {
+        personal_image.value = null
+      }
+    }
 
     const handleSignup = async () => {
+      loading.value = true;
+      console.log(loading.value);
+      
       try {
         const data= await signupStore.signup();
         //console.log(data.user);
 
-        localStorage.setItem('authToken',  data.token);
-        router.push(`/${locale.value}/auth/profile`);
+        // localStorage.setItem('authToken',  data.token);
+        // router.push(`/${locale.value}/auth/profile`);
+
+        // Redirect to login and refresh the page completely
+        window.location.replace(`/${locale.value}/auth/login`);
 
         console.log('Signup successful');
       } catch (error) {
         console.error('Signup failed:', error.message);
+      } finally {
+        loading.value = false;
       }
     };
 
     const onInputChange = (field, event) => {
       const value = event.target.value;
       console.log(`Input change for ${field}:`, value);
+      // console.log(`Input change for ${field}:`, phoneNumber.value);
       signupStore[field] = value;
-      console.log('Updated store values:', signupStore.$state);
+      // console.log('Updated store values:', signupStore.$state);
     };
 
     return {
@@ -114,7 +156,14 @@ export default {
       cities,
       handleSignup,
       onFileChange,
-      onInputChange
+      onInputChange,
+      onPhoneChange,
+      onCountryChanged,
+      phoneNumber,
+      handleFileRemove,
+      personal_image,
+      doc_image,
+      loading
     };
   }
 };
@@ -137,7 +186,6 @@ h2 {
 
 p {
   text-align: center;
-  color: #888;
   margin-bottom: 20px;
 }
 
@@ -154,8 +202,7 @@ form {
 }
 
 input,
-select,
-button {
+select {
   flex: 1;
   padding: 10px;
   border: 1px solid #ddd;
@@ -172,21 +219,5 @@ button {
 
 button:hover {
   background-color: #003946;
-}
-
-label {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  padding: 20px;
-  border: 2px dashed #ddd;
-  border-radius: 4px;
-  cursor: pointer;
-  text-align: center;
-}
-
-label input[type='file'] {
-  display: none;
 }
 </style>

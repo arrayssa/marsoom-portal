@@ -20,10 +20,10 @@
     "@fullcalendar/interaction": "^6.1.14",
     "@fullcalendar/timegrid": "^6.1.14",
     "@fullcalendar/vue3": "^6.1.14",
+    "@nuxtjs/tailwindcss": "^6.11.4",
     "@pinia/nuxt": "^0.5.1",
     "@vee-validate/nuxt": "^4.13.2",
     "@vee-validate/rules": "^4.13.2",
-    "@nuxtjs/tailwindcss": "^6.11.4",
     "axios": "^1.7.5",
     "chart.js": "3.3.2",
     "date-fns": "^3.6.0",
@@ -31,12 +31,12 @@
     "primeflex": "^3.3.0",
     "primeicons": "^6.0.1",
     "primevue": "^3.49.1",
-    "vue-phone-number-input": "^1.12.13",
     "tailwindcss-rtl": "^0.9.0",
+    "vue-phone-number-input": "^1.1.7",
     "vue-tel-input": "^9.1.4"
   },
   "devDependencies": {
-    "@babel/eslint-parser": "^7.18.9",
+    "@babel/eslint-parser": "^7.25.8",
     "@nuxtjs/i18n": "^8.0.0",
     "eslint": "^8.30.0",
     "eslint-config-prettier": "^8.5.0",
@@ -47,7 +47,7 @@
     "nuxt-primevue": "^0.3.1",
     "prettier": "2.7.1",
     "sass": "^1.60.0",
-    "tailwindcss": "^3.4.10",
-    "sass-loader": "^10.4.1"
+    "sass-loader": "^10.4.1",
+    "tailwindcss": "^3.4.10"
   }
 }

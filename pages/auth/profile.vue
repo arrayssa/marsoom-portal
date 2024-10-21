@@ -35,14 +35,12 @@
         <div class="content-title">
           <span>City:</span>
           <span>Street:</span>
-          <span>District:</span>
           <span>Birth date:</span>
           <span>ID photo:</span>
         </div>
         <div class="content-result">
           <span>{{ profile.user.city.name }}</span>
           <span>{{ profile.user.street_address }}</span>
-          <span>{{ profile.user.district }}</span>
           <span>{{ profile.user.date_of_birth }}</span>
           <img :src="profile.user.doc_image || '/path/to/default-id-image.png'" alt="ID Image" style="width: 100%; height: 150px; object-fit: cover; border-radius: 4px" />
         </div>
@@ -64,15 +62,25 @@
 
     </div>
     <div class="button-container" v-if="profile.user.role=='manager'">
-      <router-link :to="`/` + $i18n.locale + `/organization`" class="add-organization-button">Add organization account</router-link>
+      <router-link :to="`/` + $i18n.locale + `/organization/new`" class="add-organization-button" v-if="!orgStore || orgStore.organization === null">Add organization account</router-link>
+      <router-link :to="`/` + $i18n.locale + `/organization/edit`" class="add-organization-button" v-else-if="orgStore && orgStore.organization !== null && orgStore.organization.status === 'Approved'">Edit organization</router-link>
+      <router-link :to="`/` + $i18n.locale + `/organization`" class="add-organization-button" v-else-if="orgStore && orgStore.organization !== null && orgStore.organization.status === 'Pending'">Show organization</router-link>
     </div>
   </div>
 </template>
 
 <script>
-import { useProfileStore } from '../../store/auth';
+import { useProfileStore, useOrganizationStore } from '../../store/auth';
 
 export default {
+  setup() {
+    const orgStore = useOrganizationStore();
+    const { locale } = useI18n();
+
+    return {
+      orgStore
+    };
+  },
     data() {
         return {
             profile:null,

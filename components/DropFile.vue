@@ -1,11 +1,10 @@
 <template>
     <div
       class="dropzone-container"
-      @dragover="!disabled && dragover"
-      @dragleave="!disabled && dragleave"
-      @drop="!disabled && drop($event)"
-      :style="isDragging && !disabled ? 'border-color: green;' : ''"
-      :class="disabled ? 'bg-gray-200 cursor-not-allowed' : ''"
+      @dragover="dragover"
+      @dragleave="dragleave"
+      @drop="drop($event)"
+      :style="isDragging ? 'border-color: green;' : ''"
     >
       <input
         type="file"
@@ -15,7 +14,6 @@
         @change="onChange"
         ref="fileInput"
         accept=".pdf,.jpg,.jpeg,.png,.xlsx"
-        :disabled="disabled"
       />
   
       <div class="preview-container" v-if="fileData">
@@ -32,15 +30,15 @@
           <div>
             <i
               class="removeBtn pi pi-times"
-              @click="!disabled && removeFile"
+              @click="removeFile"
               title="Remove file"
             ></i>
           </div>
         </div>
       </div>
-      <label v-else :for="field" class="file-label" :class="disabled ? 'cursor-not-allowed' : 'cursor-pointer'">
+      <label v-else :for="field" class="file-label" :class="'cursor-pointer'">
         <div v-if="isDragging">Release to drop files here.</div>
-        <div :style="disabled ? 'color: #999;' : 'color: #aaa8a8;'" v-else>Drop And Drop or <u style="color: #000000;">Browse</u></div>
+        <div :style="'color: #aaa8a8;'" v-else>Drop And Drop or <u style="color: #000000;">Browse</u></div>
       </label>
     </div>
   </template>

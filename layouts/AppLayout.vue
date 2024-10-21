@@ -20,12 +20,13 @@ import AppTopbar from './AppTopbar.vue';
 import AppSidebar from './AppSidebar';
 // import AppConfig from './AppConfig.vue';
 import { useLayout } from './composables/layout';
-import { useOrganizationStore } from '../store/auth';
+import { useOrganizationStore, useProfileStore } from '../store/auth';
 
 const { layoutConfig, layoutState, isSidebarActive } = useLayout();
 
 const outsideClickListener = ref(null);
 const orgStore = useOrganizationStore();
+const profileStore = useProfileStore();
 
 watch(isSidebarActive, (newVal) => {
   if (newVal) {
@@ -36,6 +37,7 @@ watch(isSidebarActive, (newVal) => {
 });
 
 onMounted(() => {
+  profileStore.fetchProfile();
   orgStore.fetchOrganization();
 })
 

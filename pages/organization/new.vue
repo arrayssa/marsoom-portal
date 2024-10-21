@@ -43,11 +43,13 @@
             </div>
             <div class="column">
               <label for="phone1">Phone 1</label>
-              <input v-model="form.phone1" id="phone1" type="text" placeholder="Enter Phone Number" />
+              <vue-tel-input v-model="form.phone1" mode="international" @input="onPhone1Change" @country-changed="onCountryChanged" class="border border-gray-200 h-12 bg-gray-200"></vue-tel-input>
+              <!-- <input v-model="form.phone1" id="phone1" type="text" placeholder="Enter Phone Number" /> -->
             </div>
             <div class="column">
               <label for="phone2">Phone 2</label>
-              <input v-model="form.phone2" id="phone2" type="text" placeholder="Enter Phone Number" />
+              <vue-tel-input v-model="form.phone2" mode="international" @input="onPhone2Change" @country-changed="onCountryChanged" class="border border-gray-200 h-12 bg-gray-200"></vue-tel-input>
+              <!-- <input v-model="form.phone2" id="phone2" type="text" placeholder="Enter Phone Number" /> -->
             </div>
           </div>
 
@@ -197,7 +199,7 @@ export default {
         bookFile: null,
         commercialName: '',
         abbreviation: '',
-        nameTag: '',
+        nameTag: 'tghjg',
         commercialId: '',
         commercialExpiration: '',
         taxExpiration: '',
@@ -206,12 +208,12 @@ export default {
         zip: '',
         phone1: '',
         phone2: '',
-        whatsapp: '',
-        headOfficeAddress: '',
-        websiteUrl: '',
+        whatsapp: '2345678',
+        headOfficeAddress: 'gfhh567',
+        websiteUrl: '5678',
         cityId: '',
         nationalityId: '',
-        classificationCode: '',
+        classificationCode: '1',
         companyLogo: null,
         commercialFile: null,
         publishingFile: null,
@@ -289,6 +291,15 @@ export default {
 
   },
   methods: {
+    onCountryChanged(country) {
+      this.form.countryCode = country.dialCode;
+    },
+    onPhone1Change(number) {
+      this.form.phone1 = number.target.value
+    },
+    onPhone2Change(number) {
+      this.form.phone2 = number.target.value
+    },
     nextStep() {
       const currentIndex = this.steps.findIndex(s => s.id === this.currentStep.id);
       const nextStep = this.steps[currentIndex + 1];
@@ -345,8 +356,12 @@ export default {
           }
         });
         this.org = response.data.data.organization; // Assuming the data is inside the `data.organization`
-        if (this.org != null) {
-          this.$router.push('/en/organization/edit')
+        if (this.org !== null) {
+          if(this.org.status === 'Approved') {
+            this.$router.push('/en/organization/edit')
+          } else {
+            this.$router.push('/en/organization')
+          }
         }
         const organization = this.org;
         // Populate the form with the organization's details
