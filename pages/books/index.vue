@@ -295,13 +295,13 @@ const closeModal = () => {
   showUpload.value = false
   bookFile.value = null
   fileError.value = ''
-  orgStore.fetchBooks();
+  refresh();
 };
 
 const closeEditModal = () => {
   showEditModal.value = false
   editBook.value = null
-  orgStore.fetchBooks();
+  refresh();
 };
 
 await orgStore.fetchOrganization();

@@ -29,7 +29,7 @@ const model = computed(() => [
     items: [
       { label: t('Org Information'), to: `/${storedLang.value}/organization`, requireOrg: true },
       { label: t('Books'), to: `/${storedLang.value}/books`, requireOrg: true, requireApprovedOrg: true },
-      { label: t('Complete Data'), to: `/${storedLang.value}/completeData`, requireOrg: true, requireApprovedOrg: true },
+      { label: t('Complete Data'), to: `/${storedLang.value}/completeData`, requireOrg: true, requireApprovedOrg: true, requireApprovedBooks: true },
     ]
   },
   {
@@ -51,6 +51,11 @@ const filteredModel = computed(() => {
 
       // Check for requireApprovedOrg condition
       if (item.requireApprovedOrg && organizationStore.organization.status !== 'Approved') {
+        return false; // Hide the item if it requires an approved organization and the status is not approved
+      }
+
+      // Check for requireApprovedBooks condition
+      if (item.requireApprovedBooks && organizationStore.organization.pending_books > 0) {
         return false; // Hide the item if it requires an approved organization and the status is not approved
       }
 
