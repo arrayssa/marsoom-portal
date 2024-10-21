@@ -35,7 +35,7 @@
     <DataTable v-if="orgStore.organization !== null && orgStore.organization.status === 'Approved'" :loading="pending" :value="data?.data?.rows" lazy paginator :totalRecords="data?.data?.meta.total" :rows="perPage" @page="handlePageChange" tableStyle="min-width: 50rem">
       <Column field="rdmk" :header="$t('RDMK')"></Column>
       <Column field="title" :header="$t('title')"></Column>
-      <Column field="author" :header='$t("Writer name")'></Column>
+      <Column field="author" :header='$t("Author name")'></Column>
       <Column field="issue_date" :header='$t("issue_date")'></Column>
       <Column field="book_language" :header='$t("Language")'></Column>
       <Column field="quantity" :header='$t("Quantity")'></Column>
