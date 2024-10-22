@@ -4,8 +4,8 @@
       <p class="font-medium text-blue10 text-xl capitalize">{{ $t('books') }}</p>
       <Button v-if="orgStore.organization !== null && orgStore.organization.status === 'Approved' && !showUpload" :label="$t('uploadBooks')" icon="pi pi-upload" class="bg-primary text-base h-42 px-3 text-white" @click="toggleUpload"/>
       <a v-else-if="orgStore.organization !== null && orgStore.organization.status === 'Approved' && showUpload"
-        href="/assets/demo.xlsx"
-        download
+        href="https://edge.mr/demo.xlsx"
+        download="demo.xlsx"
         target="_blank"
         rel="noopener noreferrer">
         <Button :label="$t('Download demo excel file')" icon="pi pi-download" class="bg-red-600 text-white text-base h-42 px-3"/>
@@ -116,6 +116,7 @@
 import { useGetApi } from '../../composables/useApi';
 import { useOrganizationStore } from '../../store/auth';
 import { onMounted, ref } from 'vue';
+const fileLink = '../../static/demo.xlsx';
 
 const { t } = useI18n();
 const confirm = useConfirm();
