@@ -38,7 +38,19 @@
       <Column field="author" :header='$t("Author name")'></Column>
       <Column field="issue_date" :header='$t("issue_date")'></Column>
       <Column field="book_language" :header='$t("Language")'></Column>
-      <Column field="status_name" :header='$t("Status")'></Column>
+      <Column field="status_name" :header='$t("Status")'>
+        <template #body="slotProps">
+          <span
+            :class="{
+              'bg-green-100 text-green-500 border border-green-500 px-2 py-1 rounded': slotProps.data.status_name === 'Approved',
+              'bg-orange-100 text-orange-500 border border-orange-500 px-2 py-1 rounded': slotProps.data.status_name === 'Pending',
+              'bg-red-100 text-red-500 border border-red-500 px-2 py-1 rounded': slotProps.data.status_name === 'Rejected',
+            }"
+          >
+            {{ slotProps.data.status_name }}
+          </span>
+        </template>
+      </Column>
     </DataTable>
   </div>
   <div v-if="showModal2" class="modal">
