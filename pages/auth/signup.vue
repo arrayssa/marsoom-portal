@@ -54,7 +54,7 @@
       <div class="form-row">
         <div class="w-full block">
           <label>Country</label>
-          <select v-model="city_id" class="w-full">
+          <select v-model="city_id" class="w-full" @change="(event) => onInputChange('city_id', event)">
             <option value="" selected disabled>Select a city</option>
             <option v-for="city in cities" :key="city.id" :value="city.id">
               {{ city.name }}
