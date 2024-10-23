@@ -4,20 +4,40 @@
     <p>Let's create a new account</p>
     <form @submit.prevent="handleSignup" class="loading">
       <div class="form-row">
-        <input type="text" v-model="first_name" placeholder="First name" @input="(event) => onInputChange('first_name', event)" />
-        <input type="text" v-model="last_name" placeholder="Last name" @input="(event) => onInputChange('last_name', event)" />
-        <input type="text" v-model="family_name" placeholder="Family" @input="(event) => onInputChange('family_name', event)" />
+        <div class="w-full block">
+          <label>First name</label>
+          <input type="text" v-model="first_name" placeholder="First name" @input="(event) => onInputChange('first_name', event)" />
+        </div>
+        <div class="w-full block">
+          <label>Last Name</label>
+          <input type="text" v-model="last_name" placeholder="Last name" @input="(event) => onInputChange('last_name', event)" />
+        </div>
+        <div class="w-full block">
+          <label>Family Name</label>
+          <input type="text" v-model="family_name" placeholder="Family" @input="(event) => onInputChange('family_name', event)" />
+        </div>
       </div>
 
       <div class="form-row">
-        <vue-tel-input v-model="phoneNumber" mode="international" @input="onPhoneChange" @country-changed="onCountryChanged" class=" w-1/3"></vue-tel-input>
-        <!-- <input type="tel" v-model="phone" placeholder="+966 Phone" @input="(event) => onInputChange('phone', event)" /> -->
-        <input type="email" v-model="email" placeholder="Email" @input="(event) => onInputChange('email', event)" />
-        <input type="text" v-model="confirm_identity" placeholder="Confirm identity" @input="(event) => onInputChange('confirm_identity', event)" />
+        <div class="w-full block">
+          <label>Phone Number</label>
+          <vue-tel-input v-model="phoneNumber" mode="international" @input="onPhoneChange" @country-changed="onCountryChanged" class="w-full" style="height: 46px;"></vue-tel-input>
+        </div>
+        <div class="w-full block">
+          <label>Email</label>
+          <input type="email" class="w-full" v-model="email" placeholder="Email" @input="(event) => onInputChange('email', event)" />
+        </div>
+        <div class="w-full block">
+          <label>Identity</label>
+          <input type="text" class="w-full" v-model="confirm_identity" placeholder="Confirm identity" @input="(event) => onInputChange('confirm_identity', event)" />
+        </div>
       </div>
       
       <div class="form-row">
-        <input type="date" v-model="identity_expiration_date" placeholder="Identity expiration date" @input="(event) => onInputChange('identity_expiration_date', event)" />
+        <div class="w-full block">
+          <label>Identity Expiration</label>
+          <input type="date" class="w-full" v-model="identity_expiration_date" placeholder="Identity expiration date" @input="(event) => onInputChange('identity_expiration_date', event)" />
+        </div>
       </div>
 
       <div class="form-row">
@@ -32,20 +52,38 @@
       </div>
 
       <div class="form-row">
-        <select v-model="city_id">
-          <option value="" disabled>Select a city</option>
-          <option v-for="city in cities" :key="city.id" :value="city.id">
-            {{ city.name }}
-          </option>
-        </select>
-        <input type="text" v-model="district" placeholder="District" @input="(event) => onInputChange('district', event)" />
-        <input type="text" v-model="street" placeholder="Street" @input="(event) => onInputChange('street', event)" />
+        <div class="w-full block">
+          <label>Country</label>
+          <select v-model="city_id" class="w-full">
+            <option value="" selected disabled>Select a city</option>
+            <option v-for="city in cities" :key="city.id" :value="city.id">
+              {{ city.name }}
+            </option>
+          </select>
+        </div>
+        <div class="w-full block">
+          <label>City</label>
+          <input type="text" class="w-full" v-model="district" placeholder="District" @input="(event) => onInputChange('district', event)" />
+        </div>
+        <div class="w-full block">
+          <label>Street</label>
+          <input type="text" class="w-full" v-model="street" placeholder="Street" @input="(event) => onInputChange('street', event)" />
+        </div>
       </div>
 
       <div class="form-row">
-        <input type="password" v-model="password" placeholder="Password" @input="(event) => onInputChange('password', event)" />
-        <input type="password" v-model="password_confirmation" placeholder="Confirm Password" @input="(event) => onInputChange('password_confirmation', event)" />
-        <input type="date" v-model="date_of_birth" placeholder="Birth date" @input="(event) => onInputChange('date_of_birth', event)" />
+        <div class="w-full block">
+          <label>Password</label>
+          <input type="password" class="w-full" v-model="password" placeholder="Password" @input="(event) => onInputChange('password', event)" />
+        </div>
+        <div class="w-full block">
+          <label>Password Confirmation</label>
+          <input type="password" class="w-full" v-model="password_confirmation" placeholder="Confirm Password" @input="(event) => onInputChange('password_confirmation', event)" />
+        </div>
+        <div class="w-full block">
+          <label>Date of Birth</label>
+          <input type="date" class="w-full" v-model="date_of_birth" placeholder="Birth date" @input="(event) => onInputChange('date_of_birth', event)" />
+        </div>
       </div>
 
       <ProgressSpinner v-if="loading" />

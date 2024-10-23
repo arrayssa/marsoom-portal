@@ -142,13 +142,15 @@ const handlePageChange = (event) => {
   currentPage.value = event.page + 1;
 };
 
-const { pending, data, refresh } = useGetApi(`get_books_by_organization/${orgStore.organization?.id}?status=0`, {
+const { pending, data, refresh } = useGetApi(`get_books_by_organization/${orgStore.organization?.id}`, {
   limit: perPage,
   page: currentPage
 });
 
 onMounted(() => {
-  
+  if(orgStore && orgStore.organization.id) {
+    refresh();
+  }
 })
 
 const actionsMenu = computed(() => [
@@ -217,6 +219,7 @@ const submitBookFile = () => {
     showModal2.value = true;
     fileError.value = "Form submitted successfully";
     console.log('Book file submitted successfully:', response.data);
+    window.location.reload();
   } catch (error) {
     // Check if error response exists and has validation errors
     if (error.response && error.response.status === 422 && error.response.data.errors) {
