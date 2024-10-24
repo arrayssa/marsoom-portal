@@ -21,6 +21,15 @@
               <input v-model="form.name" id="name" type="text" placeholder="Enter Name"
                 :disabled="!allowedFields.includes('name')"
                 :class="!allowedFields.includes('name') ? 'bg-gray-200 cursor-not-allowed' : ''" />
+                <Field 
+                  type="text" 
+                  v-model="form.name" 
+                  id="name" 
+                  name="name"
+                  :disabled="!allowedFields.includes('name')"
+                  :class="!allowedFields.includes('name') ? 'bg-gray-200 cursor-not-allowed' : ''"
+                />
+                <ErrorMessage name="name" class="text-red-500 text-sm" />
             </div>
             <div class="column">
               <label for="commercialName">Commercial Name</label>

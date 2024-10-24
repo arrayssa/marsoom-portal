@@ -240,6 +240,7 @@ const submitBookFile = () => {
 
     showModal2.value = true;
     fileError.value = "Form submitted successfully";
+    refresh()
     console.log('Book file submitted successfully:', response.data);
     window.location.reload();
   } catch (error) {

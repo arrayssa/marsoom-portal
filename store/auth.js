@@ -104,8 +104,23 @@ export const useSignupStore = defineStore('signup', {
 
         return response.data.data;
       } catch (error) {
-        throw new Error('Failed to sign up');
         console.error(error);
+
+        // Create a structured error response
+        if (error.response && error.response.data) {
+          // Return the validation errors
+          return {
+            success: false,
+            errors: error.response.data.errors || {},
+            message: error.response.data.message || 'An error occurred'
+          };
+        }
+  
+        // Handle other types of errors
+        return {
+          success: false,
+          message: 'An unexpected error occurred. Please try again later.'
+        };
       }
     }
   }

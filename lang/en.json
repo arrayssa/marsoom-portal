@@ -215,6 +215,11 @@
   "message": "Message",
   "messageDetails": "Message Details",
   "replies": "Replies",
-  "reply": "Reply"
+  "reply": "Reply",
+  "success": "Success",
+  "Successful": "Successful",
+  "Successfully": "Successfully",
+  "error": "Error",
+  "errorSignUp": "Something went wrong!"
 }
   

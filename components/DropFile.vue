@@ -19,7 +19,7 @@
       <div class="preview-container" v-if="fileData">
         <div class="preview-card">
           <div>
-            <p>
+            <p class="max-w-28 text-ellipsis overflow-hidden">
               {{ fileData.name }}
               <span v-if="showFileSize">
                 <br>
