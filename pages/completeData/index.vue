@@ -1,11 +1,27 @@
 <template>
   <div class="">
-    <div class="flex justify-between items-center mb-10">
+    <!-- <div class="flex justify-between items-center mb-10">
       <p class="font-medium text-blue10 text-xl capitalize">{{ $t('books') }}</p>
       <div class="flex justify-end space-x-2" v-if="orgStore.organization !== null && orgStore.organization.status === 'Approved' && orgStore.organization.pending_books < 1">
         <Button :disabled="!isButton1Enabled" @click="handleButton1Click" :label="$t('Step1: Complete Data')" class="bg-primary text-base h-42 px-3 text-white"/>
         <Button :disabled="!isButton2Enabled" @click="handleButton2Click" :label="$t('Step2: Warehouse/Pavilion')" icon="pi pi-arrow-right" class="bg-primary text-base h-42 px-3 text-white"/>
         <Button :disabled="!isButton3Enabled" @click="handleButton3Click" :label="$t('Step3: Shippers')" icon="pi pi-check" class="bg-primary text-base h-42 px-3 text-white"/>
+      </div>
+    </div> -->
+    <div class="steps-container flex space-x-4 mb-8 border rounded-md border-gray-200 bg-white p-4">
+      <div class="flex items-center p-2 cursor-pointer">
+        <span :class="[ 'rounded-full flex h-14 justify-center w-14 p-4 font-bold', currentStep === 1 ? 'bg-primary text-white' : currentStep > 1 ? 'bg-green-500 text-white' : 'bg-gray-300 text-primary']">1</span>
+        <span class="font-bold mx-2">Complete Data</span>
+        <span class="font-bold">- -- -- -</span>
+      </div>
+      <div class="flex items-center p-2 cursor-pointer">
+        <span :class="[ 'rounded-full flex h-14 justify-center w-14 p-4 font-bold', currentStep === 2 ? 'bg-primary text-white' : currentStep > 2 ? 'bg-green-500 text-white' : 'bg-gray-300 text-primary']">2</span>
+        <span class="font-bold mx-2">Warehouse/Pavilion</span>
+        <span class="font-bold">- -- -- -</span>
+      </div>
+      <div class="flex items-center p-2 cursor-pointer">
+        <span :class="[ 'rounded-full flex h-14 justify-center w-14 p-4 font-bold', currentStep === 3 ? 'bg-primary text-white' : currentStep > 3 ? 'bg-green-500 text-white' : 'bg-gray-300 text-primary']">3</span>
+        <span class="font-bold mx-2">Shippers</span>
       </div>
     </div>
     <div class="block h-100 py-10 mb-10 text-center bg-white rounded-md border-gray-200 border" v-if="orgStore.organization !== null && orgStore.organization.status !== 'Approved'">
@@ -40,134 +56,140 @@
         </template>
       </Column>
     </DataTable>
-    <div v-if="currentStep === 2" class="p-6 bg-white rounded-lg shadow-md">
-      <h2 class="text-xl font-semibold mb-4">Select Manifests</h2>
-      <div class="flex items-center mb-4">
-        <input 
-          type="checkbox" 
-          v-model="selectAll" 
-          @change="toggleSelectAll" 
-          class="h-5 w-5 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500"
-        />
-        <label class="ml-2 text-sm text-gray-700">Select All</label>
-      </div>
-      <div class="h-96 overflow-y-auto space-y-2 border border-gray-300 rounded-md p-2 mb-4">
-        <div 
-          v-for="(manifest, index) in manifests.data.manifests" 
-          :key="index" 
-          class="flex items-center bg-gray-100 p-2 rounded-md shadow-sm cursor-pointer"
-          @click="toggleSelection(manifest.manifest_number)"
-        >
-          <!-- Check if manifest_location exists before rendering checkbox -->
-          <input 
-            v-if="!manifest.manifest_location" 
-            type="checkbox" 
-            :value="manifest.manifest_number" 
-            v-model="selectedManifests"
-            class="h-5 w-5 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500"
-          />
-          <span class="ml-2 text-sm text-gray-800">{{ manifest.manifest_number }}</span>
-          <span class="ml-2 text-sm text-gray-500">Quantity: {{ manifest.quantity }}</span>
-          <span 
-            v-if="manifest.manifest_location" 
-            :class="[
-              'ml-2 px-2 py-1 text-xs font-semibold rounded-ms',
-              manifest.manifest_location === 'warehouse' ? 'bg-blue-100 text-blue-500 border border-blue-500' : 
-              manifest.manifest_location === 'pavilion' ? 'bg-green-100 text-green-500 border border-green-500' : 
-              'bg-gray-500 text-white'  // Fallback color if location is neither
-            ]"
+    <div v-if="currentStep === 2">
+      <div class="block h-100 py-10 mb-10 text-center bg-red-50 rounded-md border-red-500 border" v-if="!stickerConstent">
+          <p class="text-red-700">
+            بانتقالكم الى الخطوة التالية هذا يعني بانك قمت بطباعة جميع الملصقات و تتعهد بإلصاقها على الطرود الخاصة بها حسب المدخلات من قبلكم و في حال مخالفة ذلك سيعرضعكم ذلك الى الاجراءات القانونية.
+          </p>
+        </div>
+      <div class="p-6 bg-white rounded-lg shadow-md">
+        <div class="flex items-center text-center">
+          <div class="flex items-center justify-between w-20 border border-gray-100 px-2 py-3 rounded-md">
+            <input 
+              type="checkbox" 
+              v-model="selectAll" 
+              @change="toggleSelectAll" 
+              class="h-5 w-5 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500"
+            />
+            <i class="pi pi-angle-down text-gray-500"></i>
+          </div>
+          <span class="text-xl font-semibold mx-4">Manifests</span>
+        </div>
+        <div class="h-96 overflow-y-auto space-y-2 rounded-md p-2 mb-4">
+          <div 
+            v-for="(manifest, index) in manifests.data.manifests" 
+            :key="index" 
+            class="flex items-center border-b border-gray-200 px-2 py-3 cursor-pointer"
+            @click="toggleSelection(manifest.manifest_number)"
           >
-            {{ manifest.manifest_location }}
-          </span>
+            <!-- Check if manifest_location exists before rendering checkbox -->
+            <input 
+              v-if="!manifest.manifest_location" 
+              type="checkbox" 
+              :value="manifest.manifest_number" 
+              v-model="selectedManifests"
+              class="h-5 w-5 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500"
+            />
+            <span class="ml-2 text-sm text-gray-800">{{ manifest.manifest_number }}</span>
+            <span class="ml-2 text-sm text-gray-500">Quantity:
+              <span class="bg-gray-200 p-1 rounded">{{ manifest.quantity }}</span>
+            </span>
+            <span 
+              v-if="manifest.manifest_location" 
+              :class="[
+                'ml-2 px-2 py-1 text-xs font-semibold rounded',
+                manifest.manifest_location === 'warehouse' ? 'bg-blue-100 text-blue-500 border ' : 
+                manifest.manifest_location === 'pavilion' ? 'bg-gray-100 text-gray-500 border ' : 
+                'bg-gray-500 text-white'  // Fallback color if location is neither
+              ]"
+            >
+              {{ manifest.manifest_location }}
+            </span>
+          </div>
         </div>
       </div>
-      <div class="mt-4 flex space-x-4">
+      <div class="mt-4 flex space-x-4 justify-end">
         <button 
           @click="sendToWarehouse" 
           :disabled="selectedManifests.length === 0" 
-          class="flex-1 bg-green-500 text-white py-2 px-4 rounded-md hover:bg-green-600 disabled:opacity-50"
+          class=" bg-green-300 text-green-900 py-2 px-4 rounded-md hover:bg-green-600 disabled:opacity-50"
         >
           Send to Warehouse
         </button>
         <button 
           @click="sendToPavilion" 
           :disabled="selectedManifests.length === 0" 
-          class="flex-1 bg-blue-500 text-white py-2 px-4 rounded-md hover:bg-blue-600 disabled:opacity-50"
+          class=" bg-gray-300 text-gray-900 py-2 px-4 rounded-md hover:bg-blue-600 disabled:opacity-50"
         >
           Send to Pavilion
         </button>
       </div>
     </div>
-    <div v-else-if="currentStep === 3" class="p-6 bg-white rounded-lg shadow-md">
-      <div class="block h-100 py-10 mb-10 text-center bg-red-50 rounded-md border-red-500 border" v-if="!stickerConstent">
-      <p class="text-red-700">
-        بانتقالكم الى الخطوة التالي هذا يعني بانك قمت بطباعة جميع الملصقات و تتعهد بإلصاقها على الطرود الخاصة بها حسب المدخلات من قبلكم و في حال مخالفة ذلك سيعرضعكم ذلك الى الاجراءات القانونية.
-      </p>
-    </div>
-      <h2 class="text-xl font-semibold mb-4">Assign to Shipper</h2>
-      <div class="flex items-center mb-4">
-        <input 
-          type="checkbox" 
-          v-model="selectAll" 
-          @change="toggleSelectAll" 
-          class="h-5 w-5 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500"
-        />
-        <label class="ml-2 text-sm text-gray-700">Select All</label>
-      </div>
-      <div class="h-96 overflow-y-auto space-y-2 border border-gray-300 rounded-md p-2 mb-4">
-        <div 
-          v-for="(manifest, index) in manifests.data.manifests" 
-          :key="index" 
-          class="flex items-center bg-gray-100 p-2 rounded-md shadow-sm cursor-pointer"
-          @click="toggleSelection(manifest.manifest_number)"
-        >
-          <!-- Check if manifest_location exists before rendering checkbox -->
-          <input 
-            type="checkbox" 
-            :value="manifest.manifest_number" 
-            v-model="selectedManifests"
-            class="h-5 w-5 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500"
-          />
-          <span class="ml-2 text-sm text-gray-800">{{ manifest.manifest_number }}</span>
-          <span class="ml-2 text-sm text-gray-500">Quantity: {{ manifest.quantity }}</span>
-          <span 
-            v-if="manifest.manifest_location" 
-            :class="[
-              'ml-2 px-2 py-1 text-xs font-semibold rounded-md',
-              manifest.manifest_location === 'warehouse' ? 'bg-blue-100 text-blue-500 border border-blue-500' : 
-              manifest.manifest_location === 'pavilion' ? 'bg-green-100 text-green-500 border border-green-500' : 
-              'bg-gray-500 text-white'  // Fallback color if location is neither
-            ]"
-          >
-            {{ manifest.manifest_location }}
-          </span>
-          <span 
-            v-if="manifest.shipper" 
-            :class="[
-              'ml-2 px-2 py-1 text-xs font-semibold rounded-md bg-orange-100 text-orange-500 border border-orange-500' // Fallback color if location is neither
-            ]"
-          >
-            {{ manifest.shipper.shipper_name }}
-          </span>
+    <div v-else-if="currentStep === 3">
+      <div class="p-6 bg-white rounded-lg shadow-md">
+        <div class="flex items-center">
+          <div class="flex items-center justify-between w-20 border border-gray-200 px-2 py-3 rounded-md">
+            <input 
+              type="checkbox" 
+              v-model="selectAll" 
+              @change="toggleSelectAll" 
+              class="h-5 w-5 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500"
+            />
+            <i class="pi pi-angle-down text-gray-500"></i>
+          </div>
+          <select v-model="selectedShipper" id="shipper" class="mx-2 block border border-gray-200 rounded py-2 focus:ring-gray-200 focus:border-gray-200">
+            <option value="" disabled>Assign to shipper</option>
+            <option v-for="shipper in shippers.data.shippers" :key="shipper.id" :value="shipper.id">
+              {{ shipper.shipper_name }}
+            </option>
+          </select>
         </div>
+          <div class="h-96 overflow-y-auto space-y-2 rounded-md p-2 my-4">
+            <div 
+              v-for="(manifest, index) in manifests.data.manifests" 
+              :key="index" 
+              class="flex items-center border-b border-gray-200 px-2 py-3 rounded-md cursor-pointer"
+              @click="toggleSelection(manifest.manifest_number)"
+            >
+              <!-- Check if manifest_location exists before rendering checkbox -->
+              <input 
+                type="checkbox" 
+                :value="manifest.manifest_number" 
+                v-model="selectedManifests"
+                class="h-5 w-5 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500"
+              />
+              <span class="ml-2 text-sm text-gray-800">{{ manifest.manifest_number }}</span>
+              <span class="ml-2 text-sm text-gray-500">Quantity:
+                <span class="bg-gray-200 p-1 rounded">{{ manifest.quantity }}</span>
+              </span>
+              <span 
+                v-if="manifest.manifest_location" 
+                :class="[
+                  'ml-2 px-2 py-1 text-xs font-semibold rounded',
+                  manifest.manifest_location === 'warehouse' ? 'bg-blue-100 text-blue-500 border ' : 
+                  manifest.manifest_location === 'pavilion' ? 'bg-gray-100 text-gray-500 border ' : 
+                  'bg-gray-500 text-white'  // Fallback color if location is neither
+                ]"
+              >
+                {{ manifest.manifest_location }}
+              </span>
+              <span 
+                v-if="manifest.shipper" 
+                :class="[
+                  'ml-2 px-2 py-1 text-xs font-semibold rounded bg-orange-100 text-orange-500 border' // Fallback color if location is neither
+                ]"
+              >
+                {{ manifest.shipper.shipper_name }}
+              </span>
+            </div>
+          </div>
       </div>
       
-      <!-- Shipper selection dropdown -->
-      <div class="mb-4">
-        <label for="shipper" class="block text-sm font-medium text-gray-700">Select Shipper</label>
-        <select v-model="selectedShipper" id="shipper" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
-          <option value="" disabled>Select a shipper</option>
-          <option v-for="shipper in shippers.data.shippers" :key="shipper.id" :value="shipper.id">
-            {{ shipper.shipper_name }}
-          </option>
-        </select>
-      </div>
-
-      <div class="mt-4 flex space-x-4">
+      <div class="mt-4 flex justify-end space-x-4">
         <button 
           @click="assignToShipper" 
           :disabled="selectedManifests.length === 0 || !selectedShipper" 
-          class="flex-1 bg-blue-500 text-white py-2 px-4 rounded-md hover:bg-blue-600 disabled:opacity-50"
+          class=" bg-primary text-white py-2 px-4 rounded-md hover:bg-primary disabled:opacity-50"
         >
           Assign to Shipper
         </button>
@@ -408,11 +430,7 @@ const setInitialStep = () => {
 watch(
   () => [data.value, manifests.value, orgStore.organization?.id], // Watch both data and manifests
   async (newValues) => {
-    const [newData, newManifests, newOrgId] = newValues;
-    
-    if (newOrgId) {
-      await refresh()
-    }
+    const [newData, newManifests] = newValues;
     
     // Check if the necessary data is available
     if (newData?.data?.meta && newManifests?.data?.meta) {
