@@ -9,7 +9,7 @@
       </div>
     </div> -->
     <div class="steps-container flex space-x-4 mb-8 border rounded-md border-gray-200 bg-white p-4">
-      <div class="flex items-center p-2 cursor-pointer">
+      <div class="flex items-center p-2 cursor-pointer" @click="currentStep = 1">
         <span :class="[ 'rounded-full flex h-14 justify-center w-14 p-4 font-bold', currentStep === 1 ? 'bg-primary text-white' : currentStep > 1 ? 'bg-green-500 text-white' : 'bg-gray-300 text-primary']">1</span>
         <span class="font-bold mx-2">Complete Data</span>
         <span class="font-bold">- -- -- -</span>
@@ -272,7 +272,7 @@
                     <label :for="'quantity-' + index" class="block text-sm font-medium text-gray-700">Quantity</label>
                     <Field 
                       type="number" 
-                      v-model="manifest.quantity" 
+                      v-model="manifest.pivot_quantity" 
                       :id="'quantity-' + index" 
                       :name="'manifests.' + index + '.quantity'"
                       class="mt-1 w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
@@ -464,13 +464,13 @@ const { handleSubmit } = useForm({
 });
 
 // Form submission handler
-const submitForm = handleSubmit(values => {
+const submitForm = handleSubmit(async (values) => {
   const token = localStorage.getItem('authToken');
   const { $axios } = useNuxtApp();
 
   // Assuming `manifests` is an array of manifest objects with a `quantity` field
   const totalManifestQuantity = editBook.value.manifests.reduce((total, manifest) => {
-    const quantity = manifest.quantity; // Get the quantity
+    const quantity = manifest.pivot_quantity; // Get the quantity
     return total + (typeof quantity === 'number' && quantity > 0 ? quantity : 0); // Add only valid quantities
   }, 0);
 
@@ -479,16 +479,19 @@ const submitForm = handleSubmit(values => {
     editBookError.value = 'Total manifest quantities do not match the book quantity.'
     return; // Stop the function execution if quantities do not match
   }
-  $axios.post(`books_update_quantity/${editBook.value.id}`, editBook.value, {
+  await $axios.post(`books_update_quantity/${editBook.value.id}`, editBook.value, {
     headers: {
       'Authorization': `Bearer ${token}`
     }
   })
-    .then(response => {
+    .then(async (response) => {
       console.log('Book updated successfully');
-      toast.add({ severity: 'success', summary: t('common.Successful'), detail: t('common.UpdatedSuccessfully'), life: 3000 });
       closeEditModal();
-      refresh()
+      toast.add({ severity: 'success', summary: t('common.Successful'), detail: t('common.UpdatedSuccessfully'), life: 3000 });
+      await refresh()
+      await refreshManifests()
+      await refreshShippers()
+      setInitialStep()
     })
     .catch(error => {
       console.error('Error updating book:', error);
@@ -580,6 +583,7 @@ const sendData = async () => {
       toast.add({ severity: 'success', summary: t('common.Successful'), detail: t('common.UpdatedSuccessfully'), life: 3000 });
       refresh()
       refreshManifests()
+      setInitialStep()
       selectedManifests.value = []
     })
     .catch(error => {
@@ -607,6 +611,7 @@ const assignToShipper = async () => {
       refresh()
       refreshManifests()
       refreshShippers()
+      setInitialStep()
       selectedManifests.value = []
       selectedShipper.value = ''
     })

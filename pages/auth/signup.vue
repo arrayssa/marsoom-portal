@@ -182,7 +182,6 @@ const onPhoneChange = (number) => {
   errors.value.phoneNumber = ''; // Clear error on change
 };
 
-
 const onCountryChanged = (country) => {
   console.log('Selected country:', country);
 };
@@ -192,7 +191,6 @@ const onInputChange = (field, event) => {
   const value = event.target.value;
   signupStore[field] = value;
 };
-
 
 const handleFileChange = (field, file) => {
   signupStore[field] = file;
@@ -325,16 +323,6 @@ const handleSignup = async () => {
   }
 };
 </script>
-
-<style scoped>
-/* Your styles here */
-</style>
-
-
-<style scoped>
-/* Add any necessary styles here */
-</style>
-
 
 <style scoped>
 .sign-up-form {

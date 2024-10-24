@@ -7,27 +7,31 @@
         <span class="spacer" v-if="step.id < 3">- -- -- -</span>
       </div>
     </div>
+    
     <div v-if="currentStep.id === 1">
-      <form @submit.prevent="goToStep(2)" v-if="currentStep.id === 1">
+      <form @submit.prevent="goToStep(2)">
         <div class="block p-10 mt-5 bg-white rounded-md border-gray-200 border">
           <!-- Row 1 -->
           <div class="row">
             <div class="column">
               <label for="name">Name</label>
-              <input v-model="form.name" id="name" type="text" placeholder="Enter Name" />
+              <input v-model="form.name" id="name" type="text" placeholder="Enter Name" @input="(event) => onInputChange('name', event)"/>
+              <span class="error-message" v-if="errors.name">{{ getErrorMessage('name') }}</span>
             </div>
             <div class="column">
               <label for="commercialName">Commercial Name</label>
-              <input v-model="form.commercialName" id="commercialName" type="text"
-                placeholder="Enter Commercial Name" />
+              <input v-model="form.commercialName" id="commercialName" type="text" placeholder="Enter Commercial Name" @input="(event) => onInputChange('commercialName', event)"/>
+              <span class="error-message" v-if="errors.commercialName">{{ getErrorMessage('commercialName') }}</span>
             </div>
             <div class="column">
               <label for="commercialId">Commercial ID</label>
-              <input v-model="form.commercialId" id="commercialId" type="text" placeholder="Enter ID" />
+              <input v-model="form.commercialId" id="commercialId" type="text" placeholder="Enter ID" @input="(event) => onInputChange('commercialId', event)"/>
+              <span class="error-message" v-if="errors.commercialId">{{ getErrorMessage('commercialId') }}</span>
             </div>
             <div class="column">
               <label for="commercialExpiration">Commercial Expiration</label>
-              <input v-model="form.commercialExpiration" id="commercialExpiration" type="date" />
+              <input v-model="form.commercialExpiration" id="commercialExpiration" type="date" @input="(event) => onInputChange('commercialExpiration', event)"/>
+              <span class="error-message" v-if="errors.commercialExpiration">{{ getErrorMessage('commercialExpiration') }}</span>
             </div>
           </div>
 
@@ -35,49 +39,54 @@
           <div class="row">
             <div class="column">
               <label for="email">Email</label>
-              <input v-model="form.email" id="email" type="email" placeholder="Enter Email" />
+              <input v-model="form.email" id="email" type="email" placeholder="Enter Email" @input="(event) => onInputChange('email', event)"/>
+              <span class="error-message">{{ getErrorMessage('email') }}</span>
             </div>
             <div class="column">
               <label for="zip">Zip</label>
-              <input v-model="form.zip" id="zip" type="text" placeholder="Enter Zip" />
+              <input v-model="form.zip" id="zip" type="text" placeholder="Enter Zip" @input="(event) => onInputChange('zip', event)"/>
+              <span class="error-message">{{ getErrorMessage('zip') }}</span>
             </div>
             <div class="column">
               <label for="phone1">Phone 1</label>
               <vue-tel-input v-model="form.phone1" mode="international" @input="onPhone1Change" @country-changed="onCountryChanged" class="border border-gray-200 h-12 bg-gray-200"></vue-tel-input>
-              <!-- <input v-model="form.phone1" id="phone1" type="text" placeholder="Enter Phone Number" /> -->
+              <span class="error-message">{{ getErrorMessage('phone1') }}</span>
             </div>
             <div class="column">
               <label for="phone2">Phone 2</label>
               <vue-tel-input v-model="form.phone2" mode="international" @input="onPhone2Change" @country-changed="onCountryChanged" class="border border-gray-200 h-12 bg-gray-200"></vue-tel-input>
-              <!-- <input v-model="form.phone2" id="phone2" type="text" placeholder="Enter Phone Number" /> -->
+              <span class="error-message">{{ getErrorMessage('phone2') }}</span>
             </div>
           </div>
 
           <!-- Row 3 -->
           <div class="row">
             <div class="column">
-              <label for="nationalityId">Nationality ID</label>
+              <label for="nationalityId">Country</label>
               <select v-model="form.nationalityId" id="nationalityId" @change="fetchCities">
+                <option value="" selected>Select Country</option>
                 <option v-for="country in countries" :key="country.id" :value="country.id">{{ country.name }}</option>
               </select>
+              <span class="error-message">{{ getErrorMessage('nationalityId') }}</span>
             </div>
             <div class="column">
-              <label for="cityId">City ID</label>
+              <label for="cityId">City</label>
               <select v-model="form.cityId" id="cityId">
                 <option v-for="city in cities" :key="city.id" :value="city.id">{{ city.name }}</option>
               </select>
+              <span class="error-message">{{ getErrorMessage('cityId') }}</span>
             </div>
             <div class="column">
               <label for="publishingLicense">Publishing License</label>
-              <input v-model="form.publishingLicense" id="publishingLicense" type="text"
-                placeholder="Enter Publishing License" />
+              <input v-model="form.publishingLicense" id="publishingLicense" type="text" placeholder="Enter Publishing License" @input="(event) => onInputChange('publishingLicense', event)"/>
+              <span class="error-message">{{ getErrorMessage('publishingLicense') }}</span>
             </div>
             <div class="column">
               <label for="publishingLicenseExpiration">Publishing License Expiration</label>
-              <input v-model="form.publishingLicenseExpiration" id="publishingLicenseExpiration" type="date" />
+              <input v-model="form.publishingLicenseExpiration" id="publishingLicenseExpiration" type="date" @input="(event) => onInputChange('publishingLicenseExpiration', event)"/>
+              <span class="error-message">{{ getErrorMessage('publishingLicenseExpiration') }}</span>
             </div>
           </div>
-
         </div>
         <!-- Submit Button -->
         <div class="button-row">
@@ -88,40 +97,26 @@
     </div>
 
     <div v-if="currentStep.id === 2">
-      <form @submit.prevent="goToStep(3)" v-if="currentStep.id === 2">
+      <form @submit.prevent="goToStep(3)">
         <div class="block p-10 mt-5 bg-white rounded-md border-gray-200 border">
-          
           <!-- File Uploads -->
           <div class="row">
             <div class="column">
               <label>Upload Company Logo</label>
-              <DropFile
-                field="companyLogo"
-                :fileData="form.companyLogo"
-                @file-changed="handleFileChange"
-                @file-removed="handleFileRemove"
-              />
+              <DropFile field="companyLogo" :fileData="form.companyLogo" @file-changed="handleFileChange" @file-removed="handleFileRemove" />
+              <span class="error-message">{{ getErrorMessage('companyLogo') }}</span>
             </div>
             <div class="column">
               <label>Commercial File</label>
-              <DropFile
-                field="commercialFile"
-                :fileData="form.commercialFile"
-                @file-changed="handleFileChange"
-                @file-removed="handleFileRemove"
-              />
+              <DropFile field="commercialFile" :fileData="form.commercialFile" @file-changed="handleFileChange" @file-removed="handleFileRemove" />
+              <span class="error-message">{{ getErrorMessage('commercialFile') }}</span>
             </div>
             <div class="column">
               <label>Publishing File</label>
-              <DropFile
-                field="publishingFile"
-                :fileData="form.publishingFile"
-                @file-changed="handleFileChange"
-                @file-removed="handleFileRemove"
-              />
+              <DropFile field="publishingFile" :fileData="form.publishingFile" @file-changed="handleFileChange" @file-removed="handleFileRemove" />
+              <span class="error-message">{{ getErrorMessage('publishingFile') }}</span>
             </div>
           </div>
-
           <!-- Submit Button -->
           <div class="button-row">
             <button type="button" class="cancel-btn" @click="cancelForm">Cancel</button>
@@ -132,28 +127,36 @@
     </div>
 
     <div v-if="currentStep.id === 3">
-      <form @submit.prevent="submitForm" v-if="currentStep.id === 3">
+      <div v-for="error in errors" :key="error">
+        <span class="error-message">{{ error }}</span>
+      </div>
+      <form @submit.prevent="submitForm">
         <div class="block p-10 mt-5 bg-white rounded-md border-gray-200 border">
-          
           <div class="row">
             <div class="column">
               <label for="iban">IBAN</label>
-              <input v-model="form.iban" id="iban" type="text" placeholder="Enter IBAN" />
+              <input v-model="form.iban" id="iban" type="text" placeholder="Enter IBAN" @input="(event) => onInputChange('iban', event)"/>
+              <span class="error-message">{{ getErrorMessage('iban') }}</span>
             </div>
             <div class="column">
               <label for="swiftCode">Swift Code</label>
-              <input v-model="form.swiftCode" id="swiftCode" type="text" placeholder="Enter Swift Code" />
+              <input v-model="form.swiftCode" id="swiftCode" type="text" placeholder="Enter Swift Code" @input="(event) => onInputChange('swiftCode', event)"/>
+              <span class="error-message">{{ getErrorMessage('swiftCode') }}</span>
             </div>
             <div class="column">
               <label for="bank">Bank</label>
-              <input v-model="form.bank" id="bank" type="text" placeholder="Enter Bank" />
+              <input v-model="form.bank" id="bank" type="text" placeholder="Enter Bank" @input="(event) => onInputChange('bank', event)"/>
+              <span class="error-message">{{ getErrorMessage('bank') }}</span>
             </div>
             <div class="column">
               <label for="bankAccount">Bank Account</label>
-              <input v-model="form.bankAccount" id="bankAccount" type="text" placeholder="Enter Bank Account" />
+              <input v-model="form.bankAccount" id="bankAccount" type="text" placeholder="Enter Bank Account" @input="(event) => onInputChange('bankAccount', event)"/>
+              <span class="error-message">{{ getErrorMessage('bankAccount') }}</span>
             </div>
           </div>
-
+        </div>
+        <div class="flex justify-end">
+          <ProgressSpinner v-if="loading" />
         </div>
         <!-- Submit Button -->
         <div class="button-row">
@@ -169,327 +172,318 @@
         <h3>Form Submitted Successfully!</h3>
         <p>Your organization details have been saved.</p>
         <p v-if="org_status == 'Pending'">Please wait for admin approval to complete steps.</p>
-
         <button @click="closeModal" class="close-btn">Close</button>
       </div>
     </div>
-
   </div>
-
-  <!-- Submit Button -->
-
 </template>
-<script>
+
+<script setup>
+import { ref, computed, onMounted } from 'vue';
 import DropFile from '../../components/DropFile.vue';
+import { useNuxtApp } from '#app';
 
-import '~/assets/vue-tel-input.css';
+const form = ref({
+  name: '',
+  commercialName: '',
+  commercialId: '',
+  commercialExpiration: '',
+  email: '',
+  zip: '',
+  phone1: '',
+  phone2: '',
+  nationalityId: '',
+  cityId: '',
+  publishingLicense: '',
+  publishingLicenseExpiration: '',
+  companyLogo: null,
+  commercialFile: null,
+  publishingFile: null,
+  iban: '',
+  swiftCode: '',
+  bank: '',
+  bankAccount: '',
+});
 
-const phone = ref('');
-export default {
-  // setup() {
+const currentStep = ref({
+  id: 1,
+  title: 'Critical Informations'
+});
+const steps = ref([
+  { id: 1, title: 'Critical Informations' },
+  { id: 2, title: 'Upload file' },
+  { id: 3, title: 'Bank account' },
+]);
 
-  //   definePageMeta({
-  //     layout: 'login'
-  //   });
-  // },
-  data() {
-    return {
-      form: {
-        name: '',
-        bookFile: null,
-        commercialName: '',
-        abbreviation: '',
-        nameTag: 'tghjg',
-        commercialId: '',
-        commercialExpiration: '',
-        taxExpiration: '',
-        email: '',
-        establishDate: '',
-        zip: '',
-        phone1: '',
-        phone2: '',
-        whatsapp: '2345678',
-        headOfficeAddress: 'gfhh567',
-        websiteUrl: '5678',
-        cityId: '',
-        nationalityId: '',
-        classificationCode: '1',
-        companyLogo: null,
-        commercialFile: null,
-        publishingFile: null,
-        iban: '',
-        swiftCode: '',
-        bank: '',
-        bankAccount: '',
-        membershipNumber: '',
-        publishingLicense: '',
-        publishingLicenseExpiration: ''
-      },
-      books: [], // This will hold the list of books fetched from the API
-      showEditModal: false, // Flag to control modal visibility
-      editBook: {
-        quantity: '',
-        price: '',
-        barcode: ''
-      }, // Object to hold the currently edited book data
+const countries = ref([]);
+const cities = ref([]);
+const loading = ref(false);
+const showModal = ref(false);
+const org_status = ref('');
+const errors = ref({});
 
-      add_employee: {
-        employee_id: '',
-        organization_id: '',
-      }, // Object to hold the currently edited book data
-      originalBook: null,
-      currentStep: {
-        'id': 1,
-        'title': 'Critical Informations'
-      },
-      steps: [
-        {
-          'id': 1,
-          'title': 'Critical Informations'
-        },
-        {
-          'id': 2,
-          'title': 'Upload file'
-        },
-        {
-          'id': 3,
-          'title': 'Bank account'
-        },
-      ],
-      fileError: '',
-      showModal: false,
-      showModal2: false,
-      org: null,
+const onCountryChanged = (country) => {
+  form.value.countryCode = country.dialCode;
+};
 
-      org_status: '',
-      organization_id: '',
+const onPhone1Change = (number) => {
+  form.value.phone1 = number.target.value;
+  errors.value.phone1 = ''
+};
 
-      countries: [],
-      cities: [],
-      classifications: [],
-      searchQuery: '',
-      search_id: '',
+const onPhone2Change = (number) => {
+  form.value.phone2 = number.target.value;
+  errors.value.phone2 = ''
+};
 
-      suggestions: [],
-      selectedIndex: -1, // To keep track of highlighted suggestion
-
-    };
-  },
-  computed: {
-    progressWidth() {
-      return `${(this.currentStep / this.steps.length) * 100}%`; // Calculate progress width
-    },
-  },
-
-  async mounted() {
-
-    // Fetch countries and classifications on component load
-
-    await this.fetchCountries();
-    await this.fetchClassifications();
-    await this.fetchOrganization();
-
-  },
-  methods: {
-    onCountryChanged(country) {
-      this.form.countryCode = country.dialCode;
-    },
-    onPhone1Change(number) {
-      this.form.phone1 = number.target.value
-    },
-    onPhone2Change(number) {
-      this.form.phone2 = number.target.value
-    },
-    nextStep() {
-      const currentIndex = this.steps.findIndex(s => s.id === this.currentStep.id);
-      const nextStep = this.steps[currentIndex + 1];
-      if (this.currentStep.id < 3) {
-        this.currentStep = nextStep;
-      }
-    },
-    goToStep(stepId) {
-      const step = this.steps.find(s => s.id === stepId);
-      if (this.org_status != 'Approved')
-        this.currentStep = this.steps[0];
-      this.currentStep = step;
-    },
-
-    async fetchCountries() {
-      const { $axios } = useNuxtApp();
-
-      try {
-        const response = await $axios.get('countries');  // Replace with your API endpoint
-        this.countries = response.data.data.countries;
-      } catch (error) {
-        console.error('Error fetching countries:', error);
-      }
-    },
-    async fetchCities() {
-      const { $axios } = useNuxtApp();
-
-      if (!this.form.nationalityId) return;
-      try {
-        const response = await $axios.get(`cities/${this.form.nationalityId}`); // Replace with actual API
-        this.cities = response.data.data.cities;
-      } catch (error) {
-        console.error('Error fetching cities:', error);
-      }
-    },
-    async fetchClassifications() {
-      const { $axios } = useNuxtApp();
-
-      try {
-        const response = await $axios.get('classifications'); // Replace with actual API
-        this.classifications = response.data.data.classifications;
-      } catch (error) {
-        console.error('Error fetching classifications:', error);
-      }
-    },
-    async fetchOrganization() {
-      const { $axios } = useNuxtApp();
-      const token = localStorage.getItem('authToken'); // Get the token from localStorage
-
-      try {
-        const response = await $axios.get('organizations', {
-          headers: {
-            'Authorization': `Bearer ${token}`
-          }
-        });
-        this.org = response.data.data.organization; // Assuming the data is inside the `data.organization`
-        if (this.org !== null) {
-          if(this.org.status === 'Approved') {
-            this.$router.push('/en/organization/edit')
-          } else {
-            this.$router.push('/en/organization')
-          }
-        }
-        const organization = this.org;
-        // Populate the form with the organization's details
-        this.form.name = organization.name;
-        this.form.commercialName = organization.commercial_Name;
-        this.form.abbreviation = organization.abbreviation;
-        this.form.nameTag = organization.name_tag;
-        this.form.commercialId = organization.commercial_rgistryID;
-        this.form.commercialExpiration = organization.commercial_registry_expiration;
-        this.form.taxExpiration = organization.tax_registry_expiration;
-        this.form.email = organization.email;
-        this.form.establishDate = organization.establish_date;
-        this.form.zip = organization.zip;
-        this.form.phone1 = organization.Phone1;
-        this.form.phone2 = organization.Phone2;
-        this.form.whatsapp = organization.WhatsApp;
-        this.form.headOfficeAddress = organization.head_office_address;
-        this.form.websiteUrl = organization.website;
-        this.form.cityId = organization.city_id;
-        this.form.nationalityId = organization.nationality_country_Id;
-        this.form.classificationCode = organization.org_classification_id;
-        this.form.iban = organization.iban;
-        this.form.swiftCode = organization.swift_code;
-        this.form.bank = organization.bank;
-        this.form.bankAccount = organization.account_number;
-        this.form.membershipNumber = organization.membership_number;
-        this.form.publishingLicense = organization.publishing_license_number;
-        this.form.publishingLicenseExpiration = organization.publishing_license_expiration;
-        this.organization_id = organization.id;
-        this.org_status = organization.status;
-        this.org_status = organization.status;
-
-        // Trigger fetching cities based on the selected nationalityId
-        await this.fetchCities();
-      } catch (error) {
-        console.error('Error fetching organization data:', error);
-      }
-    },
-    async submitForm() {
-      const { $axios } = useNuxtApp();
-
-      // Create FormData to handle both form fields and file uploads
-      const formData = new FormData();
-      formData.append('name', this.form.name);
-      formData.append('commercial_Name', this.form.commercialName);
-      formData.append('abbreviation', this.form.abbreviation);
-      formData.append('name_tag', this.form.nameTag);
-      formData.append('commercial_rgistryID', this.form.commercialId);
-      formData.append('commercial_registry_expiration', this.form.commercialExpiration);
-      formData.append('tax_registry_expiration', this.form.taxExpiration);
-      formData.append('email', this.form.email);
-      formData.append('establish_date', this.form.establishDate);
-      formData.append('zip', this.form.zip);
-      formData.append('Phone1', this.form.phone1);
-      formData.append('Phone2', this.form.phone2);
-      formData.append('WhatsApp', this.form.whatsapp);
-      formData.append('head_office_address', this.form.headOfficeAddress);
-      formData.append('website', this.form.websiteUrl);
-      formData.append('city_id', this.form.cityId);
-      formData.append('nationality_country_Id', this.form.nationalityId);
-      formData.append('org_classification_id', this.form.classificationCode);
-      formData.append('iban', this.form.iban);
-      formData.append('swift_code', this.form.swiftCode);
-      formData.append('bank', this.form.bank);
-      formData.append('account_number', this.form.bankAccount);
-      formData.append('membership_number', this.form.membershipNumber);
-      formData.append('publishing_license_number', this.form.publishingLicense);
-      formData.append('publishing_license_expiration', this.form.publishingLicenseExpiration);
-
-      // Add files (if available)
-      if (this.form.companyLogo) {
-        formData.append('company_logo', this.form.companyLogo);
-      }
-      if (this.form.commercialFile) {
-        formData.append('commercial_registry_file', this.form.commercialFile);
-      }
-      if (this.form.publishingFile) {
-        formData.append('publishing_file', this.form.publishingFile);
-      }
-
-      // Retrieve the Bearer token from localStorage
-      const token = localStorage.getItem('authToken');
-
-      try {
-        // Send form data with authorization token
-        const response = await $axios.post('organizations', formData, {
-          headers: {
-            'Authorization': `Bearer ${token}`,
-            'Content-Type': 'multipart/form-data'
-          }
-        });
-
-        this.org_status = response.data.data.status;
-        // if (this.org_status == 'Approved') {
-        //   this.goToStep(2);
-        // }
-        // alert(this.org_status);
-        // alert(this.org_status);
-        console.log('Form submitted successfully:', response.data);
-        this.showModal = true;
-      } catch (error) {
-        console.error('Error submitting form:', error.response || error.message);
-      }
-    },
-    cancelForm() {
-      console.log('Form canceled');
-      this.$router.push('/en/organization')
-    },
-    handleFileUpload(event, field) {
-      this.form[field] = event.target.files[0];
-    },
-    closeModal() {
-      // Close the modal
-      this.showModal = false;
-      this.showModal2 = false;
-      this.$router.push('/en/organization')
-
-    },
-    /* Drop Zone */
-    handleFileChange(file, field) {
-      this.form[field] = file;
-    },
-    handleFileRemove(field) {
-      this.form[field] = null;
-    }
-
+const onInputChange = (field, event) => {
+  const value = event.target.value;
+  if (value) {
+    errors.value[field] = ''; // Clear error on input
+  } else {
+    validateStep()
   }
 };
+
+const handleFileChange = (file, field) => {
+  form.value[field] = file;
+  errors.value[field] = ''
+};
+
+const handleFileRemove = (field) => {
+  form.value[field] = null;
+};
+
+const goToStep = (stepId) => {
+  if (validateStep()) {
+    currentStep.value = steps.value.find(step => step.id === stepId);
+  } else {
+    console.log('Validation failed:', errors.value);
+  }
+};
+
+const cancelForm = () => {
+  useRouter().push('/en/organization');
+};
+
+const closeModal = () => {
+  showModal.value = false;
+  useRouter().push('/en/organization');
+};
+
+const fetchCountries = async () => {
+  const { $axios } = useNuxtApp();
+  try {
+    const response = await $axios.get('countries');  // Replace with your API endpoint
+    countries.value = response.data.data.countries;
+  } catch (error) {
+    console.error('Error fetching countries:', error);
+  }
+};
+
+const fetchCities = async () => {
+  errors.value.nationalityId = ''
+  const { $axios } = useNuxtApp();
+  if (!form.value.nationalityId) return;
+  try {
+    const response = await $axios.get(`cities/${form.value.nationalityId}`); // Replace with actual API
+    cities.value = response.data.data.cities;
+  } catch (error) {
+    console.error('Error fetching cities:', error);
+  }
+};
+
+async function fetchOrganization() {
+  const token = localStorage.getItem('authToken'); // Get the token from localStorage
+  const { $axios } = useNuxtApp();
+  try {
+    const response = await $axios.get('organizations', {
+      headers: {
+        'Authorization': `Bearer ${token}`
+      }
+    });
+
+    org.value = response.data.data.organization; // Assuming the data is inside the `data.organization`
+
+    if (org.value !== null) {
+      if (org.value.status === 'Approved') {
+        // Redirect to edit page
+        useRouter().push('/en/organization/edit');
+      } else {
+        // Redirect to organization page
+        useRouter().push('/en/organization');
+      }
+    }
+
+    const organization = org.value;
+    // Populate the form with the organization's details
+    form.value.name = organization.name;
+    form.value.commercialName = organization.commercial_Name;
+    form.value.abbreviation = organization.abbreviation;
+    form.value.nameTag = organization.name_tag;
+    form.value.commercialId = organization.commercial_rgistryID;
+    form.value.commercialExpiration = organization.commercial_registry_expiration;
+    form.value.taxExpiration = organization.tax_registry_expiration;
+    form.value.email = organization.email;
+    form.value.establishDate = organization.establish_date;
+    form.value.zip = organization.zip;
+    form.value.phone1 = organization.Phone1;
+    form.value.phone2 = organization.Phone2;
+    form.value.whatsapp = organization.WhatsApp;
+    form.value.headOfficeAddress = organization.head_office_address;
+    form.value.websiteUrl = organization.website;
+    form.value.cityId = organization.city_id;
+    form.value.nationalityId = organization.nationality_country_Id;
+    form.value.classificationCode = organization.org_classification_id;
+    form.value.iban = organization.iban;
+    form.value.swiftCode = organization.swift_code;
+    form.value.bank = organization.bank;
+    form.value.bankAccount = organization.account_number;
+    form.value.membershipNumber = organization.membership_number;
+    form.value.publishingLicense = organization.publishing_license_number;
+    form.value.publishingLicenseExpiration = organization.publishing_license_expiration;
+    organization_id.value = organization.id;
+    org_status.value = organization.status;
+
+    // Trigger fetching cities based on the selected nationalityId
+    await fetchCities();
+  } catch (error) {
+    console.error('Error fetching organization data:', error);
+  }
+}
+
+async function submitForm() {
+  if (validateStep()) {
+    loading.value = true
+    const { $axios } = useNuxtApp();
+    // Create FormData to handle both form fields and file uploads
+    const formData = new FormData();
+    formData.append('name', form.value.name);
+    formData.append('commercial_Name', form.value.commercialName);
+    formData.append('commercial_rgistryID', form.value.commercialId);
+    formData.append('commercial_registry_expiration', form.value.commercialExpiration);
+    formData.append('email', form.value.email);
+    formData.append('zip', form.value.zip);
+    formData.append('Phone1', form.value.phone1);
+    formData.append('Phone2', form.value.phone2);
+    formData.append('city_id', form.value.cityId);
+    formData.append('nationality_country_Id', form.value.nationalityId);
+    formData.append('iban', form.value.iban);
+    formData.append('swift_code', form.value.swiftCode);
+    formData.append('bank', form.value.bank);
+    formData.append('account_number', form.value.bankAccount);
+    formData.append('publishing_license_number', form.value.publishingLicense);
+    formData.append('publishing_license_expiration', form.value.publishingLicenseExpiration);
+
+    // Add files (if available)
+    if (form.value.companyLogo) {
+      formData.append('company_logo', form.value.companyLogo);
+    }
+    if (form.value.commercialFile) {
+      formData.append('commercial_registry_file', form.value.commercialFile);
+    }
+    if (form.value.publishingFile) {
+      formData.append('publishing_file', form.value.publishingFile);
+    }
+
+    // Retrieve the Bearer token from localStorage
+    const token = localStorage.getItem('authToken');
+
+    try {
+      // Send form data with authorization token
+      const response = await $axios.post('organizations', formData, {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'multipart/form-data',
+        },
+      });
+
+      org_status.value = response.data.data.status;
+      // if (org_status.value === 'Approved') {
+      //   goToStep(2);
+      // }
+      // alert(org_status.value);
+      console.log('Form submitted successfully:', response.data);
+      showModal.value = true;
+    } catch (error) {
+      console.error('Error submitting form:', error.response || error.message);
+      if (error.response && error.response.data) {
+        Object.keys(error.response.data.errors).forEach((key) => {
+          errors.value[key] = error.response.data.errors[key][0]; // Get the first error message
+        });
+      }
+    }
+    loading.value = false
+  }
+}
+
+onMounted(async () => {
+  await fetchCountries();
+  await fetchOrganization();
+});
+
+function validateStep() {
+  // Clear previous errors
+  errors.value = {};
+  
+  // Check required fields based on the current step
+  if (currentStep.value.id === 1) {
+    // Validate Step 1 Fields
+    const requiredFields = [
+      'name',
+      'commercialName',
+      'commercialId',
+      'commercialExpiration',
+      'email',
+      'zip',
+      'phone1',
+      'phone2',
+      'nationalityId',
+      'cityId',
+      'publishingLicense',
+      'publishingLicenseExpiration',
+    ];
+    
+    requiredFields.forEach(field => {
+      if (!form.value[field]) {
+        errors.value[field] = `${field} is required`;
+      }
+    });
+  } else if (currentStep.value.id === 2) {
+    // Validate Step 2 Fields
+    const requiredFields = [
+      'companyLogo',
+      'commercialFile',
+      'publishingFile',
+    ];
+    
+    requiredFields.forEach(field => {
+      if (!form.value[field]) {
+        errors.value[field] = `${field} is required`;
+      }
+    });
+  } else if (currentStep.value.id === 3) {
+    // Validate Step 2 Fields
+    const requiredFields = [
+      'iban',
+      'swiftCode',
+      'bank',
+      'bankAccount',
+    ];
+    
+    requiredFields.forEach(field => {
+      if (!form.value[field]) {
+        errors.value[field] = `${field} is required`;
+      }
+    });
+  }
+
+  return Object.keys(errors.value).length === 0; // Return true if no errors
+}
+
+function getErrorMessage(field) {
+  return errors.value[field] || '';
+}
 </script>
 
 <style scoped>
@@ -500,7 +494,7 @@ export default {
   justify-content: center;
   align-items: center;
   position: fixed;
-  z-index: 1;
+  z-index: 999;
   left: 0;
   top: 0;
   width: 100%;
@@ -555,6 +549,7 @@ export default {
   flex: 1;
   min-width: 200px;
   margin-right: 15px;
+  margin-bottom: 10px;
 }
 
 label {
@@ -569,7 +564,6 @@ input[type="date"],
 select {
   width: 100%;
   padding: 10px 8px;
-  margin-bottom: 10px;
   border: 1px solid #ececec;
   border-radius: 4px;
 }
@@ -662,13 +656,13 @@ input[type="file"] {
 
 .error-message {
   color: red;
-  font-size: 14px;
+  font-size: 11px;
 }
 
 .button-row {
   display: flex;
   justify-content: flex-end;
-  padding: 1rem 5rem;
+  padding: 1rem 0rem;
 }
 
 .back-btn,
