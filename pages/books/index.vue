@@ -54,7 +54,7 @@
     </DataTable>
   </div>
   <div v-if="showModal2" class="modal">
-    <div class="modal-content">
+    <div class="modal-content" style="max-width: 500px;">
       <span class="close" @click="closeModal">&times;</span>
       <h3>Form Submitted Successfully!</h3>
       <p>Your book list have been uploaded.</p>
@@ -242,7 +242,7 @@ const submitBookFile = () => {
     fileError.value = "Form submitted successfully";
     refresh()
     console.log('Book file submitted successfully:', response.data);
-    window.location.reload();
+    // window.location.reload();
   } catch (error) {
     // Check if error response exists and has validation errors
     if (error.response && error.response.status === 422 && error.response.data.errors) {
