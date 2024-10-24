@@ -6,15 +6,15 @@
       <div class="form-row">
         <div class="w-full block">
           <label>First name</label>
-          <input type="text" v-model="first_name" placeholder="First name" @input="(event) => onInputChange('first_name', event)" />
+          <input type="text" class="w-full" v-model="first_name" placeholder="First name" @input="(event) => onInputChange('first_name', event)" />
         </div>
         <div class="w-full block">
           <label>Last Name</label>
-          <input type="text" v-model="last_name" placeholder="Last name" @input="(event) => onInputChange('last_name', event)" />
+          <input type="text" class="w-full" v-model="last_name" placeholder="Last name" @input="(event) => onInputChange('last_name', event)" />
         </div>
         <div class="w-full block">
           <label>Family Name</label>
-          <input type="text" v-model="family_name" placeholder="Family" @input="(event) => onInputChange('family_name', event)" />
+          <input type="text" class="w-full" v-model="family_name" placeholder="Family" @input="(event) => onInputChange('family_name', event)" />
         </div>
       </div>
 
@@ -53,7 +53,7 @@
 
       <div class="form-row">
         <div class="w-full block">
-          <label>Country</label>
+          <label>City</label>
           <select v-model="city_id" class="w-full" @change="(event) => onInputChange('city_id', event)">
             <option value="" selected disabled>Select a city</option>
             <option v-for="city in cities" :key="city.id" :value="city.id">
@@ -62,7 +62,7 @@
           </select>
         </div>
         <div class="w-full block">
-          <label>City</label>
+          <label>District</label>
           <input type="text" class="w-full" v-model="district" placeholder="District" @input="(event) => onInputChange('district', event)" />
         </div>
         <div class="w-full block">
