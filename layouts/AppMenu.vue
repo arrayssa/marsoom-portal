@@ -29,7 +29,8 @@ const model = computed(() => [
     items: [
       { label: t('Org Information'), to: `/${storedLang.value}/organization`, requireOrg: true },
       { label: t('Books'), to: `/${storedLang.value}/books`, requireOrg: true, requireApprovedOrg: true },
-      { label: t('Complete Data'), to: `/${storedLang.value}/completeData`, requireOrg: true, requireApprovedOrg: true, requireApprovedBooks: true },
+      { label: t('Complete Data'), to: `/${storedLang.value}/completeData`, requireOrg: true, requireApprovedOrg: true, visible: (organizationStore.organization && !organizationStore.orgMeta.data_completed && organizationStore.organization.pending_books < 1) },
+      { label: t('My Shipment'), to: `/${storedLang.value}/shipment`, requireOrg: true, requireApprovedOrg: true, requireApprovedBooks: true, visible: (organizationStore.organization && organizationStore.orgMeta.data_completed) },
     ]
   },
   {

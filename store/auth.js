@@ -140,6 +140,7 @@ export const useProfileStore = defineStore('profile', {
 export const useOrganizationStore = defineStore('organization', {
     state: () => ({
         organization: null,
+        orgMeta: null,
         books: []
     }),
     actions: {
@@ -154,6 +155,7 @@ export const useOrganizationStore = defineStore('organization', {
                 });
                 const response = await api.get('/organizations');
                 this.organization = response.data.data.organization;
+                this.orgMeta = response.data.data.meta;
                 //  alert( this.user.city.name)
             } catch (error) {
                 console.error('Failed to fetch profile:', error);

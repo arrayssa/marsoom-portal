@@ -154,16 +154,26 @@ const handlePageChange = (event) => {
   currentPage.value = event.page + 1;
 };
 
+await orgStore.fetchOrganization();
+
 const { pending, data, refresh } = useGetApi(`get_books_by_organization/${orgStore.organization?.id}`, {
   limit: perPage,
   page: currentPage
 });
 
 onMounted(() => {
-  if(orgStore && orgStore.organization.id) {
-    refresh();
-  }
+  refresh();
 })
+watch(
+  () => orgStore.organization?.id, // Watch only the organization ID
+  async (newOrgId) => {
+    
+    if (newOrgId) {
+      await refresh()
+    }
+  },
+  { immediate: true } // Run the watcher immediately on load
+);
 
 const actionsMenu = computed(() => [
   {
@@ -320,8 +330,6 @@ const closeEditModal = () => {
   refresh();
 };
 
-await orgStore.fetchOrganization();
-// await orgStore.fetchBooks();
 </script>
 
 <style>
@@ -342,9 +350,8 @@ await orgStore.fetchOrganization();
   background-color: #fefefe;
   padding: 20px;
   border: 1px solid #888;
-  width: 80%;
-  max-width: 400px;
-  text-align: center;
+  width: 100%;
+  text-align: start;
   border-radius: 10px;
 }
 

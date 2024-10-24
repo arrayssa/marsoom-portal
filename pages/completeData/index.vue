@@ -2,37 +2,16 @@
   <div class="">
     <div class="flex justify-between items-center mb-10">
       <p class="font-medium text-blue10 text-xl capitalize">{{ $t('books') }}</p>
-      <Button v-if="orgStore.organization !== null && orgStore.organization.status === 'Approved' && !showUpload" :label="$t('uploadBooks')" icon="pi pi-upload" class="bg-primary text-base h-42 px-3 text-white" @click="toggleUpload"/>
-      <a v-else-if="orgStore.organization !== null && orgStore.organization.status === 'Approved' && showUpload"
-        href="/assets/demo.xlsx"
-        download
-        target="_blank"
-        rel="noopener noreferrer">
-        <Button :label="$t('Download demo excel file')" icon="pi pi-download" class="bg-red-600 text-white text-base h-42 px-3"/>
-      </a>
+      <div class="flex justify-end space-x-2" v-if="orgStore.organization !== null && orgStore.organization.status === 'Approved' && orgStore.organization.pending_books < 1">
+        <Button :disabled="!isButton1Enabled" @click="handleButton1Click" :label="$t('Step1: Complete Data')" class="bg-primary text-base h-42 px-3 text-white"/>
+        <Button :disabled="!isButton2Enabled" @click="handleButton2Click" :label="$t('Step2: Warehouse/Pavilion')" icon="pi pi-arrow-right" class="bg-primary text-base h-42 px-3 text-white"/>
+        <Button :disabled="!isButton3Enabled" @click="handleButton3Click" :label="$t('Step3: Shippers')" icon="pi pi-check" class="bg-primary text-base h-42 px-3 text-white"/>
+      </div>
     </div>
     <div class="block h-100 py-10 mb-10 text-center bg-white rounded-md border-gray-200 border" v-if="orgStore.organization !== null && orgStore.organization.status !== 'Approved'">
       <p class="text-red-700">Waiting For administration approval!</p>
     </div>
-    <div v-if="showUpload">
-      <div class="block p-5 mb-10 bg-white rounded-md border-gray-200 border">
-        <div class="upload-container">
-          <label for="bookFile">Upload Excel File (.xlsx)</label>
-          <DropFile
-              field="bookFile"
-              :fileData="bookFile"
-              @file-changed="handleFileUploadExcel"
-              @file-removed="handleFileRemove"
-            />
-        </div>
-        <div v-if="fileError" class="text-red-500">{{ fileError }}</div>
-        <div class="flex justify-center mt-5">
-          <Button v-if="orgStore.organization !== null && orgStore.organization.status === 'Approved' && showUpload" :label="$t('cancel')" icon="pi pi-times" class=" bg-slate-100 text-base h-42 px-3" @click="toggleUpload"/>
-          <Button v-if="orgStore.organization !== null && orgStore.organization.status === 'Approved' && showUpload" :label="$t('uploadBooks')" icon="pi pi-upload" class="bg-primary text-base h-42 px-3 mx-5 text-white" @click="submitBookFile"/>
-        </div>
-      </div>
-    </div>
-    <DataTable v-if="orgStore.organization !== null && orgStore.organization.status === 'Approved'" :loading="pending" :value="data?.data?.rows" lazy paginator :totalRecords="data?.data?.meta.total" :rows="perPage" @page="handlePageChange" tableStyle="min-width: 50rem">
+    <DataTable v-else-if="orgStore.organization !== null && orgStore.organization.status === 'Approved' && currentStep === 1" :loading="pending" :value="data?.data?.rows" lazy paginator :totalRecords="data?.data?.meta.total" :rows="perPage" @page="handlePageChange" tableStyle="min-width: 50rem">
       <Column field="rdmk" :header="$t('RDMK')"></Column>
       <Column field="title" :header="$t('title')"></Column>
       <Column field="author" :header='$t("Author name")'></Column>
@@ -61,6 +40,140 @@
         </template>
       </Column>
     </DataTable>
+    <div v-if="currentStep === 2" class="p-6 bg-white rounded-lg shadow-md">
+      <h2 class="text-xl font-semibold mb-4">Select Manifests</h2>
+      <div class="flex items-center mb-4">
+        <input 
+          type="checkbox" 
+          v-model="selectAll" 
+          @change="toggleSelectAll" 
+          class="h-5 w-5 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500"
+        />
+        <label class="ml-2 text-sm text-gray-700">Select All</label>
+      </div>
+      <div class="h-96 overflow-y-auto space-y-2 border border-gray-300 rounded-md p-2 mb-4">
+        <div 
+          v-for="(manifest, index) in manifests.data.manifests" 
+          :key="index" 
+          class="flex items-center bg-gray-100 p-2 rounded-md shadow-sm cursor-pointer"
+          @click="toggleSelection(manifest.manifest_number)"
+        >
+          <!-- Check if manifest_location exists before rendering checkbox -->
+          <input 
+            v-if="!manifest.manifest_location" 
+            type="checkbox" 
+            :value="manifest.manifest_number" 
+            v-model="selectedManifests"
+            class="h-5 w-5 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500"
+          />
+          <span class="ml-2 text-sm text-gray-800">{{ manifest.manifest_number }}</span>
+          <span class="ml-2 text-sm text-gray-500">Quantity: {{ manifest.quantity }}</span>
+          <span 
+            v-if="manifest.manifest_location" 
+            :class="[
+              'ml-2 px-2 py-1 text-xs font-semibold rounded-ms',
+              manifest.manifest_location === 'warehouse' ? 'bg-blue-100 text-blue-500 border border-blue-500' : 
+              manifest.manifest_location === 'pavilion' ? 'bg-green-100 text-green-500 border border-green-500' : 
+              'bg-gray-500 text-white'  // Fallback color if location is neither
+            ]"
+          >
+            {{ manifest.manifest_location }}
+          </span>
+        </div>
+      </div>
+      <div class="mt-4 flex space-x-4">
+        <button 
+          @click="sendToWarehouse" 
+          :disabled="selectedManifests.length === 0" 
+          class="flex-1 bg-green-500 text-white py-2 px-4 rounded-md hover:bg-green-600 disabled:opacity-50"
+        >
+          Send to Warehouse
+        </button>
+        <button 
+          @click="sendToPavilion" 
+          :disabled="selectedManifests.length === 0" 
+          class="flex-1 bg-blue-500 text-white py-2 px-4 rounded-md hover:bg-blue-600 disabled:opacity-50"
+        >
+          Send to Pavilion
+        </button>
+      </div>
+    </div>
+    <div v-else-if="currentStep === 3" class="p-6 bg-white rounded-lg shadow-md">
+      <div class="block h-100 py-10 mb-10 text-center bg-red-50 rounded-md border-red-500 border" v-if="!stickerConstent">
+      <p class="text-red-700">
+        بانتقالكم الى الخطوة التالي هذا يعني بانك قمت بطباعة جميع الملصقات و تتعهد بإلصاقها على الطرود الخاصة بها حسب المدخلات من قبلكم و في حال مخالفة ذلك سيعرضعكم ذلك الى الاجراءات القانونية.
+      </p>
+    </div>
+      <h2 class="text-xl font-semibold mb-4">Assign to Shipper</h2>
+      <div class="flex items-center mb-4">
+        <input 
+          type="checkbox" 
+          v-model="selectAll" 
+          @change="toggleSelectAll" 
+          class="h-5 w-5 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500"
+        />
+        <label class="ml-2 text-sm text-gray-700">Select All</label>
+      </div>
+      <div class="h-96 overflow-y-auto space-y-2 border border-gray-300 rounded-md p-2 mb-4">
+        <div 
+          v-for="(manifest, index) in manifests.data.manifests" 
+          :key="index" 
+          class="flex items-center bg-gray-100 p-2 rounded-md shadow-sm cursor-pointer"
+          @click="toggleSelection(manifest.manifest_number)"
+        >
+          <!-- Check if manifest_location exists before rendering checkbox -->
+          <input 
+            type="checkbox" 
+            :value="manifest.manifest_number" 
+            v-model="selectedManifests"
+            class="h-5 w-5 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500"
+          />
+          <span class="ml-2 text-sm text-gray-800">{{ manifest.manifest_number }}</span>
+          <span class="ml-2 text-sm text-gray-500">Quantity: {{ manifest.quantity }}</span>
+          <span 
+            v-if="manifest.manifest_location" 
+            :class="[
+              'ml-2 px-2 py-1 text-xs font-semibold rounded-md',
+              manifest.manifest_location === 'warehouse' ? 'bg-blue-100 text-blue-500 border border-blue-500' : 
+              manifest.manifest_location === 'pavilion' ? 'bg-green-100 text-green-500 border border-green-500' : 
+              'bg-gray-500 text-white'  // Fallback color if location is neither
+            ]"
+          >
+            {{ manifest.manifest_location }}
+          </span>
+          <span 
+            v-if="manifest.shipper" 
+            :class="[
+              'ml-2 px-2 py-1 text-xs font-semibold rounded-md bg-orange-100 text-orange-500 border border-orange-500' // Fallback color if location is neither
+            ]"
+          >
+            {{ manifest.shipper.shipper_name }}
+          </span>
+        </div>
+      </div>
+      
+      <!-- Shipper selection dropdown -->
+      <div class="mb-4">
+        <label for="shipper" class="block text-sm font-medium text-gray-700">Select Shipper</label>
+        <select v-model="selectedShipper" id="shipper" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
+          <option value="" disabled>Select a shipper</option>
+          <option v-for="shipper in shippers.data.shippers" :key="shipper.id" :value="shipper.id">
+            {{ shipper.shipper_name }}
+          </option>
+        </select>
+      </div>
+
+      <div class="mt-4 flex space-x-4">
+        <button 
+          @click="assignToShipper" 
+          :disabled="selectedManifests.length === 0 || !selectedShipper" 
+          class="flex-1 bg-blue-500 text-white py-2 px-4 rounded-md hover:bg-blue-600 disabled:opacity-50"
+        >
+          Assign to Shipper
+        </button>
+      </div>
+    </div>
+
   </div>
   <div v-if="showModal2" class="modal">
     <div class="modal-content">
@@ -73,121 +186,142 @@
     </div>
   </div>
   <div v-if="showEditModal" class="modal">
-    <div class="modal-content h-3/4 overflow-hidden">
-      <!-- Modal Header -->
-      <div class="flex justify-between items-center px-4 py-2 border-b border-gray-200">
-        <h3 class="text-lg font-semibold">{{ isComplete(editBook) ? 'Edit book' : 'Complete data' }}</h3>
-        <button class="text-gray-500 hover:text-gray-700" @click="closeEditModal">&times;</button>
-      </div>
-      
-      <!-- Modal Body -->
-      <div class="modal-body h-4/5 overflow-auto p-4">
-        <div class="mb-4">
-          <label for="quantity" class="block text-sm font-medium text-gray-700">Total Quantity:</label>
-          <input 
-            type="number" 
-            v-model="editBook.quantity" 
-            id="quantity" 
-            class="mt-1 w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-          />
+    <form @submit.prevent="submitForm">
+      <div class="modal-content h-3/4 overflow-hidden">
+        <!-- Modal Header -->
+        <div class="flex justify-between items-center px-4 py-2 border-b border-gray-200">
+          <h3 class="text-lg font-semibold">{{ isComplete(editBook) ? 'Edit book' : 'Complete data' }}</h3>
+          <button class="text-gray-500 hover:text-gray-700" @click="closeEditModal">&times;</button>
         </div>
+          <!-- Modal Body -->
+          <div class="modal-body h-4/5 overflow-auto p-4" style="max-height: 80vh;">
+            <div class="mb-4">
+              <label for="quantity" class="block text-sm font-medium text-gray-700">Total Quantity:</label>
+              <Field 
+                type="number" 
+                v-model="editBook.quantity" 
+                id="quantity" 
+                name="quantity"
+                class="mt-1 w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+              />
+              <ErrorMessage name="quantity" class="text-red-500 text-sm" />
+            </div>
 
-        <div class="mb-4">
-          <label for="price" class="block text-sm font-medium text-gray-700">Price:</label>
-          <input 
-            type="number" 
-            v-model="editBook.price" 
-            id="price" 
-            class="mt-1 w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-          />
-        </div>
+            <div class="mb-4">
+              <label for="price" class="block text-sm font-medium text-gray-700">Price:</label>
+              <Field 
+                type="number" 
+                v-model="editBook.price" 
+                id="price" 
+                name="price"
+                class="mt-1 w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+              />
+              <ErrorMessage name="price" class="text-red-500 text-sm" />
+            </div>
 
-        <div class="mb-4">
-          <label for="barcode" class="block text-sm font-medium text-gray-700">Barcode:</label>
-          <input 
-            type="text" 
-            v-model="editBook.barcode" 
-            id="barcode" 
-            class="mt-1 w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-          />
-        </div>
-        
-        <div class="b-4 text-start ">
-          <div class="mb-4 border-t py-2" v-for="(pnumber, index) in editBook.packages" :key="index">
-            <label :for="'package-' + index" class="block text-sm font-bold underline text-gray-700">Package {{ index + 1 }}:</label>
-            <div class="flex justify-between">
-              <div class="block w-5/12">
-                <label :for="'package-' + index" class="block text-sm font-medium text-gray-700">Number</label>
-                <input 
-                  type="text" 
-                  v-model="pnumber.number" 
-                  :id="'package-' + index" 
-                  class="mt-1 w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-                />
+            <div class="mb-4">
+              <label for="barcode" class="block text-sm font-medium text-gray-700">Barcode:</label>
+              <Field 
+                type="text" 
+                v-model="editBook.barcode" 
+                id="barcode" 
+                name="barcode"
+                class="mt-1 w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+              />
+              <ErrorMessage name="barcode" class="text-red-500 text-sm" />
+            </div>
+            
+            <div class="b-4 text-start">
+              <div class="mb-4 border-t py-2" v-for="(manifest, index) in editBook.manifests" :key="index">
+                <label :for="'package-' + index" class="block text-sm font-bold underline text-gray-700">Package {{ index + 1 }}:</label>
+                <div class="flex justify-between">
+                  <div class="block w-5/12">
+                    <label :for="'package-' + index" class="block text-sm font-medium text-gray-700">Number</label>
+                    <Field 
+                      type="text" 
+                      v-model="manifest.manifest_number" 
+                      :id="'package-' + index"
+                      :name="'manifests.' + index + '.manifest_number'"
+                      class="mt-1 w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                    />
+                    <ErrorMessage :name="'manifests.' + index + '.manifest_number'" class="text-red-500 text-sm" />
+                  </div>
+                  <div class="block w-5/12">
+                    <label :for="'quantity-' + index" class="block text-sm font-medium text-gray-700">Quantity</label>
+                    <Field 
+                      type="number" 
+                      v-model="manifest.quantity" 
+                      :id="'quantity-' + index" 
+                      :name="'manifests.' + index + '.quantity'"
+                      class="mt-1 w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                    />
+                    <ErrorMessage :name="'manifests.' + index + '.quantity'" class="text-red-500 text-sm" />
+                  </div>
+                </div>
+                <button 
+                  v-if="index > 0"
+                  class="mt-2 text-red-500 hover:text-red-700"
+                  @click="removeInput(index)"
+                >
+                  Remove
+                </button>
               </div>
-              <div class="block w-5/12">
-                <label :for="'quantity-' + index" class="block text-sm font-medium text-gray-700">Quantity</label>
-                <input 
-                  type="text" 
-                  v-model="pnumber.quantity" 
-                  :id="'quantity-' + index" 
-                  class="mt-1 w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-                />
+              <div class="px-4 py-3 border-t border-gray-200 flex justify-center space-x-2">
+                <button 
+                  class="px-4 py-2 bg-green-500 text-white text-sm font-medium rounded-md hover:bg-gray-600"
+                  @click="addNewInput"
+                >
+                  <i class="pi pi-plus"></i>
+                  Add
+                </button>
               </div>
             </div>
-            <!-- Remove button for package numbers, except the first one -->
-            <button 
-              v-if="index > 0"
-              class="mt-2 text-red-500 hover:text-red-700"
-              @click="removeInput(index)"
-            >
-              Remove
-            </button>
           </div>
-          <div class="px-4 py-3 border-t border-gray-200 flex justify-center space-x-2">
+        <!-- Modal Footer -->
+        <div class="px-4 py-3 border-t border-gray-200 block">
+          <p class="text-red-500 text-sm mb-0" v-if="editBookError">{{ editBookError }}</p>
+          <div class="flex justify-end space-x-2">
             <button 
-              class="px-4 py-2 bg-green-500 text-white text-sm font-medium rounded-md hover:bg-gray-600"
-              @click="addNewInput"
+              class="px-4 py-2 bg-gray-500 text-white text-sm font-medium rounded-md hover:bg-gray-600"
+              @click="closeEditModal"
             >
-              <i class="pi pi-plus"></i>
-              Add
+              Cancel
+            </button>
+            <button 
+              class="px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-md hover:bg-blue-700"
+              type="submit"
+            >
+              Save
             </button>
           </div>
         </div>
       </div>
-      
-      <!-- Modal Footer -->
-      <div class="px-4 py-3 border-t border-gray-200 flex justify-end space-x-2">
-        <button 
-          class="px-4 py-2 bg-gray-500 text-white text-sm font-medium rounded-md hover:bg-gray-600"
-          @click="closeEditModal"
-        >
-          Cancel
-        </button>
-        <button 
-          class="px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-md hover:bg-blue-700"
-          @click="saveChanges"
-        >
-          Save
-        </button>
-      </div>
-    </div>
+    </form>
   </div>
 </template>
 
 <script setup>
 import { useGetApi } from '../../composables/useApi';
 import { useOrganizationStore } from '../../store/auth';
-import { onMounted, ref } from 'vue';
+import { onMounted, ref, defineComponent } from 'vue';
+import { Field, Form, ErrorMessage, useForm } from 'vee-validate';
+import * as yup from 'yup';
 
-const { t } = useI18n();
+const { t, locale } = useI18n();
 const confirm = useConfirm();
 const toast = useToast();
 const orgStore = useOrganizationStore();
+const router = useRouter();
 
 const menu = ref();
 const selectedId = ref();
-const selectedBook = ref();
+const currentStep = ref(1);
+const selectedManifests = ref([]);
+const selectedShipper = ref('');
+const selectAll = ref(false);
+const showConfirmation = ref(false);
+const currentAction = ref('');
+const stickerConstent = ref(false)
 
 let visible = ref(false);
 let perPage = ref(10);
@@ -198,119 +332,135 @@ let showModal2 = ref(false);
 let showUpload = ref(false);
 let bookFile = ref(null);
 let fileError = ref('');
+let editBookError = ref('');
 const editBook = ref({
   quantity: 0,
   price: 0,
   barcode: '',
-  packages: [{ number: '', quantity: 1 }] // Start with one empty package number
+  manifests: [{ manifest_number: '', quantity: 1 }] // Start with one empty package number
 });
 
 const addNewInput = () => {
-  editBook.value.packages.push({ number: '', quantity: 1 });
+  editBook.value.manifests.push({ manifest_number: '', quantity: 0 });
 };
 
 const removeInput = (index) => {
-  editBook.value.packages.splice(index, 1);
+  editBook.value.manifests.splice(index, 1);
 };
 
 const handlePageChange = (event) => {
   currentPage.value = event.page + 1;
 };
 
+await orgStore.fetchOrganization();
+
 const { pending, data, refresh } = useGetApi(`get_books_by_organization/${orgStore.organization?.id}?status=1`, {
   limit: perPage,
   page: currentPage
 });
 
+const { data: manifests, refresh: refreshManifests } = useGetApi(`get_manifests_by_organization/${orgStore.organization?.id}`);
+
+const { data: shippers, refresh: refreshShippers } = useGetApi(`get_shippers`);
+
 onMounted(() => {
-  
+  refresh()
 })
 
-const toggleUpload = () => {
-  showUpload.value = !showUpload.value
-  bookFile.value = null
-  fileError.value = ''
+const isComplete = (item) => {
+  return item.price && item.quantity && item.barcode && item.manifests.length > 0;
+}
+// Computed properties to determine button states
+const isButton1Enabled = computed(() => 
+  data.value?.data?.meta?.data_completed !== undefined 
+    ? !data.value.data.meta.data_completed 
+    : false // or true, depending on your initial requirement
+);
+
+const isButton2Enabled = computed(() => 
+  data.value?.data?.meta?.data_completed === true && 
+  manifests.value?.data?.meta?.locations_completed !== undefined 
+    ? !manifests.value.data.meta.locations_completed 
+    : false // or true, depending on your initial requirement
+);
+
+const isButton3Enabled = computed(() => 
+  manifests.value?.data?.meta?.locations_completed === true && 
+  manifests.value?.data?.meta?.shippers_completed !== undefined 
+    ? !manifests.value.data.meta.shippers_completed 
+    : false // or true, depending on your initial requirement
+);
+// Method to set the initial step based on the button states
+const setInitialStep = () => {
+  if (isButton1Enabled.value) {
+    currentStep.value = 1;
+  } else if (isButton2Enabled.value) {
+    currentStep.value = 2;
+  } else if (isButton3Enabled.value) {
+    currentStep.value = 3;
+  } else {
+    currentStep.value = null; // or a default step if necessary
+    router.push(`/${locale.value}/shipment`);
+  }
 };
 
-const isComplete = (item) => {
-  return item.price && item.quantity && item.barcode;
-}
-
-const submitBookFile = () => {
-  const { $axios } = useNuxtApp();
-
-  if (bookFile.value === null) {
-    fileError.value = "Please upload an Excel file before submitting.";
-    return;
-  }
-
-  const formData = new FormData();
-  formData.append('file', bookFile.value);
-  formData.append('organization_id', orgStore.organization.id);
-
-  try {
-    const token = localStorage.getItem('authToken');
-    const response = $axios.post('import_books', formData, {
-      headers: {
-        'Authorization': `Bearer ${token}`,
-        'Content-Type': 'multipart/form-data'
-      }
-    });
-
-    showModal2.value = true;
-    fileError.value = "Form submitted successfully";
-    console.log('Book file submitted successfully:', response.data);
-  } catch (error) {
-    // Check if error response exists and has validation errors
-    if (error.response && error.response.status === 422 && error.response.data.errors) {
-      const errors = error.response.data.errors;
-
-      // If file validation error exists, display it
-      if (errors.file) {
-        fileError.value = errors.file.join(', ');
-      } else {
-        fileError.value = "An unknown error occurred.";
-      }
-    } else {
-      // Display general error if not validation-related
-      fileError.value = error.message || "Error submitting book file.";
+// Watch for changes in the data or manifests and set the initial step accordingly
+watch(
+  () => [data.value, manifests.value, orgStore.organization?.id], // Watch both data and manifests
+  async (newValues) => {
+    const [newData, newManifests, newOrgId] = newValues;
+    
+    if (newOrgId) {
+      await refresh()
     }
-
-    console.error('Error submitting book file:', error.response || error.message);
-  }
-}
+    
+    // Check if the necessary data is available
+    if (newData?.data?.meta && newManifests?.data?.meta) {
+      setInitialStep();
+    }
+  },
+  { immediate: true } // Run the watcher immediately to set the initial step on load
+);
 
 const openEditModal = (book) => {
   editBook.value = {
     ...book,
-    packages: Array.isArray(book.packages) && book.packages.length > 0 ? book.packages : [{ number: '', quantity: 1 }]
+    manifests: Array.isArray(book.manifests) && book.manifests.length > 0 ? book.manifests : [{ manifest_number: '', quantity: 1 }]
   };
   showEditModal.value = true
 }
 
-const toggle = (event, id) => {
-  menu.value.toggle(event);
-  selectedId.value = id;
-};
+// Validation schema
+const { handleSubmit } = useForm({
+  validationSchema: yup.object({
+    quantity: yup.number().required('Total Quantity is required').positive('Total Quantity must be positive'),
+    price: yup.number().required('Price is required').positive('Price must be positive'),
+    barcode: yup.string().required('Barcode is required'),
+    manifests: yup.array().of(
+      yup.object().shape({
+        manifest_number: yup.string().required('Manifest number is required'),
+        quantity: yup.number().required('Manifest quantity is required').positive('Manifest quantity must be positive'),
+      })
+    ).required('At least one manifest is required').min(1, 'At least one manifest is required'),
+  }),
+});
 
-const handleFileUploadExcel = (file, field) => {
-  // const file = event.target.files[0];
-  if (file && file.type === "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet") {
-    bookFile.value = file; // Assign the file to the form field
-    fileError.value = ''; // Clear any previous errors
-  } else {
-    fileError.value = "Please upload a valid Excel file (.xlsx)";
-  }
-}
-
-const saveChanges = () => {
+// Form submission handler
+const submitForm = handleSubmit(values => {
   const token = localStorage.getItem('authToken');
-
-  // Close the modal after saving changes
-
-  // You could also send the updated book data to the backend here, using $axios.put or $axios.post if needed
-  // Example:
   const { $axios } = useNuxtApp();
+
+  // Assuming `manifests` is an array of manifest objects with a `quantity` field
+  const totalManifestQuantity = editBook.value.manifests.reduce((total, manifest) => {
+    const quantity = manifest.quantity; // Get the quantity
+    return total + (typeof quantity === 'number' && quantity > 0 ? quantity : 0); // Add only valid quantities
+  }, 0);
+
+  if (totalManifestQuantity !== editBook.value.quantity) {
+    console.error('Error: Total manifest quantities do not match the book quantity.');
+    editBookError.value = 'Total manifest quantities do not match the book quantity.'
+    return; // Stop the function execution if quantities do not match
+  }
   $axios.post(`books_update_quantity/${editBook.value.id}`, editBook.value, {
     headers: {
       'Authorization': `Bearer ${token}`
@@ -318,22 +468,15 @@ const saveChanges = () => {
   })
     .then(response => {
       console.log('Book updated successfully');
+      toast.add({ severity: 'success', summary: t('common.Successful'), detail: t('common.UpdatedSuccessfully'), life: 3000 });
+      closeEditModal();
+      refresh()
     })
     .catch(error => {
       console.error('Error updating book:', error);
+      toast.add({ severity: 'error', summary: t('common.error'), detail: t('common.Error'), life: 3000 });
     });
-  closeEditModal();
-
-}
-
-const handleFileRemove = () => {
-  bookFile.value = null;
-}
-
-const openModal = (event, book) => {
-  selectedBook.value = book;
-  visible.value = true;
-}
+});
 
 const closeModal = () => {
   visible.value = false;
@@ -351,8 +494,110 @@ const closeEditModal = () => {
   orgStore.fetchBooks();
 };
 
-await orgStore.fetchOrganization();
-// await orgStore.fetchBooks();
+// Button click handlers
+const handleButton1Click = () => {
+  // Logic for Step 1
+  currentStep.value = 1
+};
+
+const handleButton2Click = () => {
+  // Logic for Step 2
+  currentStep.value = 2
+};
+
+const handleButton3Click = () => {
+  // Logic for Step 3
+  currentStep.value = 3
+};
+
+const toggleSelection = (manifestNumber) => {
+  const index = selectedManifests.value.indexOf(manifestNumber);
+  if (index === -1) {
+    selectedManifests.value.push(manifestNumber);
+  } else {
+    selectedManifests.value.splice(index, 1);
+  }
+};
+
+const toggleSelectAll = () => {
+  if (selectAll.value) {
+    selectedManifests.value = manifests.value.data.manifests.map(manifest => manifest.manifest_number);
+  } else {
+    selectedManifests.value = [];
+  }
+};
+
+const sendToWarehouse = () => {
+  currentAction.value = 'warehouse';
+  sendData()
+};
+
+const sendToPavilion = () => {
+  currentAction.value = 'pavilion';
+  sendData()
+};
+
+const handleConfirm = () => {
+  // Process the selected manifests for the specified action
+  // Reset selection after confirmation
+  selectedManifests.value = [];
+  showConfirmation.value = false;
+};
+
+// Form submission handler
+const sendData = async () => {
+  const token = localStorage.getItem('authToken');
+  const { $axios } = useNuxtApp();
+
+  $axios.post(`update_manifests_locations/${orgStore.organization?.id}`, {
+      manifests: selectedManifests.value,
+      action: currentAction.value
+    },
+    {
+    headers: {
+      'Authorization': `Bearer ${token}`
+    }
+  })
+    .then(response => {
+      toast.add({ severity: 'success', summary: t('common.Successful'), detail: t('common.UpdatedSuccessfully'), life: 3000 });
+      refresh()
+      refreshManifests()
+      selectedManifests.value = []
+    })
+    .catch(error => {
+      console.error('Error updating book:', error);
+      toast.add({ severity: 'error', summary: t('common.error'), detail: t('common.Error'), life: 3000 });
+    });
+}
+
+// Function to assign the selected shipper to the selected manifests
+const assignToShipper = async () => {
+  const token = localStorage.getItem('authToken');
+  const { $axios } = useNuxtApp();
+
+  $axios.post(`update_manifests_shipper/${orgStore.organization?.id}`, {
+      manifests: selectedManifests.value,
+      shipper_id: selectedShipper.value
+    },
+    {
+    headers: {
+      'Authorization': `Bearer ${token}`
+    }
+  })
+    .then(response => {
+      toast.add({ severity: 'success', summary: t('common.Successful'), detail: t('common.UpdatedSuccessfully'), life: 3000 });
+      refresh()
+      refreshManifests()
+      refreshShippers()
+      selectedManifests.value = []
+      selectedShipper.value = ''
+    })
+    .catch(error => {
+      console.error('Error updating book:', error);
+      toast.add({ severity: 'error', summary: t('common.error'), detail: t('common.Error'), life: 3000 });
+    });
+};
+
 </script>
 
 <style>
@@ -373,9 +618,9 @@ await orgStore.fetchOrganization();
   background-color: #fefefe;
   padding: 20px;
   border: 1px solid #888;
-  width: 80%;
-  max-width: 400px;
-  text-align: center;
+  width: 100%;
+  min-width: 500px;
+  text-align: start;
   border-radius: 10px;
 }
 

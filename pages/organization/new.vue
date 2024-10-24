@@ -572,7 +572,6 @@ select {
   margin-bottom: 10px;
   border: 1px solid #ececec;
   border-radius: 4px;
-  background-color: #f4f4f4;
 }
 
 button {

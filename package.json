@@ -33,7 +33,8 @@
     "primevue": "^3.49.1",
     "tailwindcss-rtl": "^0.9.0",
     "vue-phone-number-input": "^1.1.7",
-    "vue-tel-input": "^9.1.4"
+    "vue-tel-input": "^9.1.4",
+    "yup": "^1.4.0"
   },
   "devDependencies": {
     "@babel/eslint-parser": "^7.25.8",
