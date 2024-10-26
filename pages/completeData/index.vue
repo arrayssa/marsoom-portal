@@ -422,7 +422,7 @@ const setInitialStep = () => {
     currentStep.value = 3;
   } else {
     currentStep.value = null; // or a default step if necessary
-    router.push(`/${locale.value}/shipment`);
+    router.push(`/${locale.value}/auth/profile`);
   }
 };
 
