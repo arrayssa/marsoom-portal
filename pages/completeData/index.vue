@@ -274,10 +274,10 @@
                       type="number" 
                       v-model="manifest.pivot_quantity" 
                       :id="'quantity-' + index" 
-                      :name="'manifests.' + index + '.quantity'"
+                      :name="'manifests.' + index + '.pivot_quantity'"
                       class="mt-1 w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
                     />
-                    <ErrorMessage :name="'manifests.' + index + '.quantity'" class="text-red-500 text-sm" />
+                    <ErrorMessage :name="'manifests.' + index + '.pivot_quantity'" class="text-red-500 text-sm" />
                   </div>
                 </div>
                 <button 
@@ -359,11 +359,11 @@ const editBook = ref({
   quantity: 0,
   price: 0,
   barcode: '',
-  manifests: [{ manifest_number: '', quantity: 1 }] // Start with one empty package number
+  manifests: [{ manifest_number: '', pivot_quantity: 1 }] // Start with one empty package number
 });
 
 const addNewInput = () => {
-  editBook.value.manifests.push({ manifest_number: '', quantity: 0 });
+  editBook.value.manifests.push({ manifest_number: '', pivot_quantity: 0 });
 };
 
 const removeInput = (index) => {
@@ -443,7 +443,7 @@ watch(
 const openEditModal = (book) => {
   editBook.value = {
     ...book,
-    manifests: Array.isArray(book.manifests) && book.manifests.length > 0 ? book.manifests : [{ manifest_number: '', quantity: 1 }]
+    manifests: Array.isArray(book.manifests) && book.manifests.length > 0 ? book.manifests : [{ manifest_number: '', pivot_quantity: 1 }]
   };
   showEditModal.value = true
 }
@@ -457,7 +457,7 @@ const { handleSubmit } = useForm({
     manifests: yup.array().of(
       yup.object().shape({
         manifest_number: yup.string().required('Manifest number is required'),
-        quantity: yup.number().required('Manifest quantity is required').positive('Manifest quantity must be positive'),
+        pivot_quantity: yup.number().required('Manifest quantity is required').positive('Manifest quantity must be positive'),
       })
     ).required('At least one manifest is required').min(1, 'At least one manifest is required'),
   }),
@@ -487,6 +487,7 @@ const submitForm = handleSubmit(async (values) => {
     .then(async (response) => {
       console.log('Book updated successfully');
       closeEditModal();
+      editBookError.value = ''
       toast.add({ severity: 'success', summary: t('common.Successful'), detail: t('common.UpdatedSuccessfully'), life: 3000 });
       await refresh()
       await refreshManifests()
