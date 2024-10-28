@@ -4,7 +4,7 @@
     <div class="rounded-profile" v-if="profile.user">
       <div class="user">
         <div>
-          <img :src="profile.user.personal_image || 'default-profile-image-url'" alt="Profile Image" />
+          <img :src="profile.user.personal_image || 'default-profile-image-url'" alt="Profile Image"  class="object-cover"/>
         </div>
         <div class="txt">
           <h4>{{ profile.user.first_name }} {{ profile.user.last_name }}</h4>
@@ -64,7 +64,7 @@
                 <img
                   :src="profile.user.doc_image || '/path/to/default-id-image.png'"
                   alt="ID Image"
-                  class="w-24 h-24 object-cover rounded-lg ml-4"
+                  class="w-24 h-24 object-contain rounded-lg ml-4"
                 />
               </div>
             </div>

@@ -4,7 +4,7 @@
       <p class="font-medium text-blue10 text-xl capitalize">{{ $t('books') }}</p>
       <div class="flex justify-end space-x-2" v-if="orgStore.organization !== null && orgStore.organization.status === 'Approved' && orgStore.organization.pending_books < 1">
         <Button :disabled="!isButton1Enabled" @click="handleButton1Click" :label="$t('Step1: Complete Data')" class="bg-primary text-base h-42 px-3 text-white"/>
-        <Button :disabled="!isButton2Enabled" @click="handleButton2Click" :label="$t('Step2: Warehouse/Pavilion')" icon="pi pi-arrow-right" class="bg-primary text-base h-42 px-3 text-white"/>
+        <Button :disabled="!isButton2Enabled" @click="handleButton2Click" :label="$t('Step2: Storage/Booth')" icon="pi pi-arrow-right" class="bg-primary text-base h-42 px-3 text-white"/>
         <Button :disabled="!isButton3Enabled" @click="handleButton3Click" :label="$t('Step3: Shippers')" icon="pi pi-check" class="bg-primary text-base h-42 px-3 text-white"/>
       </div>
     </div> -->
@@ -16,7 +16,7 @@
       </div>
       <div class="flex items-center p-2 cursor-pointer">
         <span :class="[ 'rounded-full flex h-14 justify-center w-14 p-4 font-bold', currentStep === 2 ? 'bg-primary text-white' : currentStep > 2 ? 'bg-green-500 text-white' : 'bg-gray-300 text-primary']">2</span>
-        <span class="font-bold mx-2">Warehouse/Pavilion</span>
+        <span class="font-bold mx-2">Storage/Booth</span>
         <span class="font-bold">- -- -- -</span>
       </div>
       <div class="flex items-center p-2 cursor-pointer">
@@ -98,8 +98,8 @@
               v-if="manifest.manifest_location" 
               :class="[
                 'ml-2 px-2 py-1 text-xs font-semibold rounded',
-                manifest.manifest_location === 'warehouse' ? 'bg-blue-100 text-blue-500 border ' : 
-                manifest.manifest_location === 'pavilion' ? 'bg-gray-100 text-gray-500 border ' : 
+                manifest.manifest_location === 'storage' ? 'bg-blue-100 text-blue-500 border ' : 
+                manifest.manifest_location === 'booth' ? 'bg-gray-100 text-gray-500 border ' : 
                 'bg-gray-500 text-white'  // Fallback color if location is neither
               ]"
             >
@@ -110,18 +110,18 @@
       </div>
       <div class="mt-4 flex space-x-4 justify-end">
         <button 
-          @click="sendToWarehouse" 
+          @click="sendToStorage" 
           :disabled="selectedManifests.length === 0" 
           class=" bg-green-300 text-green-900 py-2 px-4 rounded-md hover:bg-green-600 disabled:opacity-50"
         >
-          Send to Warehouse
+          Send to Storage
         </button>
         <button 
-          @click="sendToPavilion" 
+          @click="sendToBooth" 
           :disabled="selectedManifests.length === 0" 
           class=" bg-gray-300 text-gray-900 py-2 px-4 rounded-md hover:bg-blue-600 disabled:opacity-50"
         >
-          Send to Pavilion
+          Send to Booth
         </button>
       </div>
     </div>
@@ -166,8 +166,8 @@
                 v-if="manifest.manifest_location" 
                 :class="[
                   'ml-2 px-2 py-1 text-xs font-semibold rounded',
-                  manifest.manifest_location === 'warehouse' ? 'bg-blue-100 text-blue-500 border ' : 
-                  manifest.manifest_location === 'pavilion' ? 'bg-gray-100 text-gray-500 border ' : 
+                  manifest.manifest_location === 'storage' ? 'bg-blue-100 text-blue-500 border ' : 
+                  manifest.manifest_location === 'booth' ? 'bg-gray-100 text-gray-500 border ' : 
                   'bg-gray-500 text-white'  // Fallback color if location is neither
                 ]"
               >
@@ -549,13 +549,13 @@ const toggleSelectAll = () => {
   }
 };
 
-const sendToWarehouse = () => {
-  currentAction.value = 'warehouse';
+const sendToStorage = () => {
+  currentAction.value = 'storage';
   sendData()
 };
 
-const sendToPavilion = () => {
-  currentAction.value = 'pavilion';
+const sendToBooth = () => {
+  currentAction.value = 'booth';
   sendData()
 };
 
